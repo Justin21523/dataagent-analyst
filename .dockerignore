@@ -1,0 +1,47 @@
+# Git
+.git/
+.gitignore
+
+# Python environment and cache
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment files
+.env
+.env.local
+.env.docker
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime application data
+data/raw/**
+data/processed/**
+data/reports/**
+data/models/**
+data/vector_store/**
+data/imported/**
+data/bundles/**
+
+# Local LLM models
+models/**
+*.gguf
+*.bin
+
+# Test and development-only files
+backend/tests/
+docs/
+scripts/
+CHANGELOG.md
+
+# Logs
+*.log

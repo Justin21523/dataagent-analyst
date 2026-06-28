@@ -1,0 +1,256 @@
+.visualization-v2-section {
+  margin-top: 1.5rem;
+}
+
+.visualization-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    6,
+    minmax(0, 1fr)
+  );
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.visualization-summary-card {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      var(--surface-soft)
+    );
+}
+
+.visualization-summary-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visualization-summary-card strong {
+  display: block;
+  margin-top: 0.45rem;
+  overflow: hidden;
+  font-size: 1.35rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visualization-warning-list {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.visualization-warning-card {
+  padding: 0.85rem 1rem;
+  border: 1px solid #fde68a;
+  border-radius: 0.9rem;
+  color: #92400e;
+  background: #fffbeb;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.visualization-builder-grid {
+  grid-template-columns: 0.75fr 1.25fr;
+}
+
+.visualization-builder-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.visualization-builder-form label {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.visualization-builder-form select {
+  width: 100%;
+  padding: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  color: var(--text);
+  background: #ffffff;
+  font: inherit;
+}
+
+.custom-chart-panel {
+  min-width: 0;
+}
+
+.custom-visualization-meta {
+  margin-bottom: 0.75rem;
+}
+
+.custom-visualization-info h4 {
+  margin: 0.35rem 0 0.5rem;
+}
+
+.custom-visualization-info > p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.echart-custom-canvas {
+  width: 100%;
+  min-height: 430px;
+}
+
+.visualization-dashboard-panel {
+  min-width: 0;
+  margin-top: 1rem;
+}
+
+.echart-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+  gap: 1rem;
+}
+
+.echart-card {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.15rem;
+  background: #ffffff;
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.04);
+}
+
+.echart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.echart-card-header h4 {
+  margin: 0.35rem 0 0;
+  font-size: 1.05rem;
+}
+
+.echart-description {
+  min-height: 3rem;
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.echart-canvas {
+  width: 100%;
+  min-height: 380px;
+  margin-top: 0.75rem;
+}
+
+.echart-insight {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #cffafe;
+  border-radius: 0.85rem;
+  background: #ecfeff;
+}
+
+.echart-insight strong {
+  color: #0e7490;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.echart-insight p {
+  margin: 0.35rem 0 0;
+  color: #155e75;
+  line-height: 1.55;
+}
+
+.visualization-skeleton {
+  display: grid;
+  min-height: 18rem;
+  place-content: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.visualization-skeleton span {
+  width: 12rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      #e2e8f0,
+      #f8fafc,
+      #e2e8f0
+    );
+  background-size: 200% 100%;
+  animation:
+    visualization-skeleton-shimmer 1.4s infinite;
+}
+
+.visualization-skeleton p {
+  color: var(--muted);
+}
+
+@keyframes visualization-skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .visualization-summary-grid {
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+@media (max-width: 900px) {
+  .visualization-builder-grid,
+  .echart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .echart-canvas {
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 620px) {
+  .visualization-summary-grid {
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  }
+
+  .echart-card {
+    padding: 0.75rem;
+  }
+
+  .echart-canvas,
+  .echart-custom-canvas {
+    min-height: 310px;
+  }
+}

@@ -1,0 +1,205 @@
+name: ${COMPOSE_PROJECT_NAME:-dataagent-analyst}
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:16-alpine}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dataagent}
+      POSTGRES_USER: ${POSTGRES_USER:-dataagent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dataagent_dev_password}
+    ports:
+      - host_ip: 127.0.0.1
+        target: 5432
+        published: "${POSTGRES_PORT:-0}"
+        protocol: tcp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - dataagent_network
+
+  qdrant:
+    image: ${QDRANT_IMAGE:-qdrant/qdrant:v1.18.1}
+    restart: unless-stopped
+    environment:
+      QDRANT__LOG_LEVEL: ${QDRANT_LOG_LEVEL:-INFO}
+    ports:
+      - host_ip: 127.0.0.1
+        target: 6333
+        published: "${QDRANT_PORT:-0}"
+        protocol: tcp
+      - host_ip: 127.0.0.1
+        target: 6334
+        published: "${QDRANT_GRPC_PORT:-0}"
+        protocol: tcp
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - dataagent_network
+
+  qdrant-ready:
+    image: ${CURL_IMAGE:-curlimages/curl:8.12.1}
+    depends_on:
+      qdrant:
+        condition: service_started
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        until curl -fsS http://qdrant:6333/readyz >/dev/null; do
+          echo "Waiting for Qdrant readiness..."
+          sleep 2
+        done
+        echo "Qdrant is ready."
+    restart: "no"
+    networks:
+      - dataagent_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/backend/Dockerfile
+      args:
+        PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.12-slim-bookworm}
+    restart: unless-stopped
+    init: true
+    environment:
+      APP_ENV: ${APP_ENV:-docker}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-10}
+      UVICORN_WORKERS: ${UVICORN_WORKERS:-1}
+
+      DATABASE_URL: >-
+        postgresql://${POSTGRES_USER:-dataagent}:${POSTGRES_PASSWORD:-dataagent_dev_password}@postgres:5432/${POSTGRES_DB:-dataagent}
+
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: ${QDRANT_API_KEY:-}
+
+      INFRASTRUCTURE_CHECKS_ENABLED: ${INFRASTRUCTURE_CHECKS_ENABLED:-true}
+      INFRASTRUCTURE_TIMEOUT_SECONDS: ${INFRASTRUCTURE_TIMEOUT_SECONDS:-3}
+
+      LLM_ENABLED: ${LLM_ENABLED:-false}
+      LLM_BASE_URL: http://llama:8080
+      LLM_MODEL: ${LLM_MODEL_ALIAS:-local-model}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-60}
+      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.2}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-700}
+    ports:
+      - host_ip: 127.0.0.1
+        target: 8000
+        published: "${BACKEND_PORT:-0}"
+        protocol: tcp
+    volumes:
+      - app_raw_data:/app/data/raw
+      - app_processed_data:/app/data/processed
+      - app_reports:/app/data/reports
+      - app_models:/app/data/models
+      - app_vector_store:/app/data/vector_store
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant-ready:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
+    networks:
+      - dataagent_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deploy/frontend/Dockerfile
+      args:
+        NGINX_IMAGE: ${NGINX_IMAGE:-nginx:stable-alpine}
+    restart: unless-stopped
+    ports:
+      - host_ip: 127.0.0.1
+        target: 80
+        published: "${FRONTEND_PORT:-0}"
+        protocol: tcp
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://127.0.0.1/healthz >/dev/null || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - dataagent_network
+
+  llama:
+    image: ${LLM_IMAGE:-ghcr.io/ggml-org/llama.cpp:server}
+    profiles:
+      - llm
+    command:
+      - -m
+      - /models/${LLM_MODEL_FILE:-model.gguf}
+      - --alias
+      - ${LLM_MODEL_ALIAS:-local-model}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --ctx-size
+      - ${LLM_CONTEXT_SIZE:-4096}
+      - --threads
+      - ${LLM_THREADS:-8}
+    ports:
+      - host_ip: 127.0.0.1
+        target: 8080
+        published: "${LLM_PORT:-0}"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: ./models
+        target: /models
+        read_only: true
+    restart: "on-failure:3"
+    stop_grace_period: 30s
+    networks:
+      - dataagent_network
+
+networks:
+  dataagent_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  qdrant_storage:
+  app_raw_data:
+  app_processed_data:
+  app_reports:
+  app_models:
+  app_vector_store:

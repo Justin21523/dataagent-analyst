@@ -1,0 +1,13 @@
+customer_id,age,gender,signup_date,monthly_charges,tenure_months,contract_type,payment_method,is_active,support_tickets,notes,churn
+C0001,29,Female,2023-01-15,799,12,Monthly,Credit Card,true,1,Called support once,No
+C0002,41,Male,2023-02-20,1299,4,Monthly,Bank Transfer,false,3,Requested cancellation,Yes
+C0003,35,Female,2022-11-05,999,24,One Year,Credit Card,true,0,,No
+C0004,52,Male,2024-03-19,1599,2,Monthly,Electronic Wallet,false,5,High monthly usage,Yes
+C0005,46,Female,2021-06-30,899,36,Two Year,Bank Transfer,true,1,Loyal customer,No
+C0006,31,Male,2023-09-10,1099,7,Monthly,Credit Card,false,2,Price complaint,Yes
+C0007,27,Female,2022-08-12,699,18,One Year,Electronic Wallet,true,0,Uses mobile app often,No
+C0008,63,Male,2024-01-22,1899,3,Monthly,Credit Card,false,4,Requested discount,Yes
+C0009,38,Female,2022-04-18,1199,15,One Year,Bank Transfer,true,1,,No
+C0010,44,Male,2023-12-01,1399,6,Monthly,Electronic Wallet,false,3,Asked about competitor pricing,Yes
+C0011,,Female,2023-05-08,999,11,Monthly,Credit Card,true,2,Missing age value,No
+C0012,36,Male,2021-10-14,,28,Two Year,Bank Transfer,true,0,Missing monthly charge,No

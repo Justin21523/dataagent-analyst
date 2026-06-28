@@ -1,0 +1,315 @@
+<section class="agent-section">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">Agent</span>
+            <h3>Agent Workflow Lab</h3>
+          </div>
+        </div>
+
+        <section class="workspace-grid agent-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Control</span>
+                <h3>Run Data Analyst Agent</h3>
+              </div>
+            </div>
+
+            <div class="ml-form">
+              <label for="agentGoalInput">Agent Goal</label>
+              <textarea
+                id="agentGoalInput"
+                rows="5"
+                spellcheck="false"
+                placeholder="Example: Run a complete data analysis workflow and prepare a portfolio-ready summary."
+              ></textarea>
+
+              <label class="checkbox-row">
+                <input id="agentRunMlCheckbox" type="checkbox" checked />
+                Run ML training
+              </label>
+
+              <label class="checkbox-row">
+                <input id="agentGenerateReportCheckbox" type="checkbox" checked />
+                Generate Markdown report
+              </label>
+
+              <label class="checkbox-row">
+                <input id="agentGenerateInsightCheckbox" type="checkbox" checked />
+                Generate AI insight
+              </label>
+
+              <button id="runAgentWorkflowButton" class="primary-button" type="button">
+                Run Agent Workflow
+              </button>
+            </div>
+
+            <div id="agentStatusPanel" class="training-status">
+              <p class="empty-state">Select a dataset and run the agent workflow.</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Timeline</span>
+                <h3>Workflow Steps</h3>
+              </div>
+            </div>
+
+            <div id="agentTimelinePanel">
+              <p class="empty-state">No workflow run yet.</p>
+            </div>
+          </article>
+        </section>
+
+
+
+        <article class="panel agent-job-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Async Job</span>
+              <h3>Background Agent Job</h3>
+            </div>
+
+            <button id="refreshAgentJobsButton" class="secondary-button" type="button">
+              Refresh Jobs
+            </button>
+          </div>
+
+          <button id="startAgentJobButton" class="primary-button" type="button">
+            Start Background Agent Job
+          </button>
+
+          <div id="agentJobStatusPanel" class="training-status">
+            <p class="empty-state">Start a background job to stream progress.</p>
+          </div>
+
+          <div class="workspace-grid agent-job-grid">
+            <div>
+              <div class="panel-header nested-header">
+                <div>
+                  <span class="panel-tag">Jobs</span>
+                  <h3>Job History</h3>
+                </div>
+              </div>
+
+              <div id="agentJobListPanel" class="dataset-list">
+                <p class="empty-state">No background jobs yet.</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="panel-header nested-header">
+                <div>
+                  <span class="panel-tag">Events</span>
+                  <h3>Live / Replay Events</h3>
+                </div>
+              </div>
+
+              <div id="agentJobEventsPanel" class="agent-step-list">
+                <p class="empty-state">No job events yet.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel agent-history-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">History</span>
+              <h3>Agent Run History</h3>
+            </div>
+
+            <button id="refreshAgentRunsButton" class="secondary-button" type="button">
+              Refresh Runs
+            </button>
+          </div>
+
+          <div id="agentRunHistoryPanel" class="dataset-list">
+            <p class="empty-state">No workflow history yet.</p>
+          </div>
+        </article>
+
+        <article class="panel agent-output-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Outputs</span>
+              <h3>Agent Final Outputs</h3>
+            </div>
+          </div>
+
+          <div id="agentOutputsPanel">
+            <p class="empty-state">No agent outputs yet.</p>
+          </div>
+        </article>
+      </section>
+
+<section class="ai-insight-section">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">Local LLM</span>
+            <h3>AI Insight Panel</h3>
+          </div>
+        </div>
+
+        <section class="workspace-grid ai-insight-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Runtime</span>
+                <h3>LLM Status</h3>
+              </div>
+
+              <button id="refreshLLMStatusButton" class="secondary-button" type="button">
+                Refresh
+              </button>
+            </div>
+
+            <div id="llmStatusPanel">
+              <p class="empty-state">Checking local LLM status...</p>
+            </div>
+
+            <div class="ml-form insight-form">
+              <label for="aiInsightGoalInput">Optional Goal</label>
+              <textarea
+                id="aiInsightGoalInput"
+                rows="5"
+                spellcheck="false"
+                placeholder="Example: Explain the dataset quality for a business stakeholder."
+              ></textarea>
+
+              <button id="generateEdaInsightButton" class="primary-button" type="button">
+                Generate EDA Explanation
+              </button>
+
+              <button id="generateModelInsightButton" class="secondary-button" type="button">
+                Generate Model Explanation
+              </button>
+
+              <button id="generateReportInsightButton" class="secondary-button" type="button">
+                Generate Report Summary
+              </button>
+            </div>
+          </article>
+
+          <article class="panel ai-insight-output-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Explanation</span>
+                <h3>AI Explanation Output</h3>
+              </div>
+            </div>
+
+            <div id="aiInsightOutput">
+              <p class="empty-state">Generate an AI explanation to see results here.</p>
+            </div>
+          </article>
+        </section>
+      </section>
+
+<section class="workspace-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Drift</span>
+              <h3>Drift Center</h3>
+            </div>
+          </div>
+
+          <div class="ml-form">
+            <label for="driftReferenceVersionInput">Reference Version</label>
+            <input id="driftReferenceVersionInput" type="text" value="v1" />
+
+            <label for="driftCurrentVersionInput">Current Version</label>
+            <input id="driftCurrentVersionInput" type="text" placeholder="Example: v2" />
+
+            <button id="runDriftReportButton" class="primary-button" type="button">
+              Run Drift Report
+            </button>
+
+            <button id="buildRetrainPlanButton" class="secondary-button" type="button">
+              Retrain Plan
+            </button>
+
+            <button id="runRetrainChallengerButton" class="secondary-button" type="button">
+              Retrain Challenger
+            </button>
+          </div>
+
+          <div id="driftReportOutput" class="table-wrapper">
+            <p class="empty-state">No drift report yet.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Migration</span>
+              <h3>Bundle Export</h3>
+            </div>
+          </div>
+
+          <button id="exportBundleButton" class="primary-button" type="button">
+            Export Dataset Bundle
+          </button>
+
+          <pre id="bundleOutput" class="code-output small-output">No bundle exported yet.</pre>
+        </article>
+      </section>
+
+<section class="report-section">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">Reports</span>
+            <h3>Report Center</h3>
+          </div>
+        </div>
+
+        <section class="workspace-grid report-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Generate</span>
+                <h3>Analysis Report</h3>
+              </div>
+            </div>
+
+            <button id="generateReportButton" class="primary-button" type="button">
+              Generate Markdown Report
+            </button>
+
+            <div id="reportStatus" class="training-status">
+              <p class="empty-state">Select a dataset to generate a report.</p>
+            </div>
+
+            <div class="panel-header nested-header">
+              <div>
+                <span class="panel-tag">History</span>
+                <h3>Generated Reports</h3>
+              </div>
+            </div>
+
+            <div id="reportList" class="dataset-list">
+              <p class="empty-state">No reports generated yet.</p>
+            </div>
+          </article>
+
+          <article class="panel report-viewer-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Markdown</span>
+                <h3>Report Viewer</h3>
+              </div>
+
+              <button id="downloadReportButton" class="secondary-button" type="button">
+                Download .md
+              </button>
+            </div>
+
+            <div id="reportViewer" class="report-viewer">
+              <p class="empty-state">Generate or select a report to preview Markdown.</p>
+            </div>
+          </article>
+        </section>
+      </section>

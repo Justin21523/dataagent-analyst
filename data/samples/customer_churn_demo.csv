@@ -1,0 +1,301 @@
+customer_id,age,gender,region,signup_date,monthly_charges,tenure_months,contract_type,payment_method,is_active,support_tickets,satisfaction_score,notes,churn
+C00001,,Female,Central,2023-05-15,1228,8,Monthly,Bank Transfer,true,0,1,Regular customer,Yes
+C00002,20,Male,Central,2021-11-23,731,36,Monthly,Electronic Wallet,true,1,3,,No
+C00003,67,Female,South,2024-01-04,879,22,Monthly,Bank Transfer,true,3,5,Regular customer,No
+C00004,72,Female,North,2021-07-26,611,41,One Year,Bank Transfer,true,0,2,Contacted support,No
+C00005,42,Female,Central,2024-08-03,1168,23,Monthly,Bank Transfer,false,2,2,,Yes
+C00006,68,Male,East,2022-10-07,1305,4,Monthly,Credit Card,true,1,2,Asked about pricing,No
+C00007,48,Male,East,2021-07-06,1031,10,Monthly,Credit Card,true,4,4,Regular customer,No
+C00008,62,Male,East,2021-08-23,596,28,One Year,Bank Transfer,true,1,5,,No
+C00009,40,Male,North,2021-08-06,1127,8,Monthly,Credit Card,true,5,3,,Yes
+C00010,28,Female,South,2022-05-09,899,24,One Year,Electronic Wallet,true,1,1,Requested discount,No
+C00011,23,Female,East,2022-03-10,1511,49,Monthly,Credit Card,true,4,2,Requested discount,Yes
+C00012,,Male,North,2024-04-20,1132,43,One Year,Bank Transfer,true,0,1,Asked about pricing,No
+C00013,23,Female,Central,2024-03-15,860,58,Monthly,Bank Transfer,false,1,4,Requested discount,No
+C00014,31,Male,East,2023-04-05,1386,7,Monthly,Bank Transfer,true,1,1,,Yes
+C00015,31,Female,South,2024-08-28,1288,35,Monthly,Bank Transfer,true,1,1,Requested discount,Yes
+C00016,34,Female,East,2023-07-21,1289,11,Monthly,Bank Transfer,true,4,2,Uses mobile app,Yes
+C00017,54,Female,South,2022-10-05,1085,43,One Year,Credit Card,true,0,1,Regular customer,No
+C00018,52,Female,Central,2024-03-12,910,11,Monthly,Electronic Wallet,true,0,1,Asked about pricing,No
+C00019,61,Male,Central,2024-08-14,1045,38,One Year,Bank Transfer,true,2,3,Uses mobile app,No
+C00020,19,Female,North,2022-05-16,997,30,One Year,Electronic Wallet,true,2,5,Uses mobile app,No
+C00021,38,Female,South,2021-08-08,767,40,Two Year,Electronic Wallet,true,4,1,,No
+C00022,64,Male,East,2021-04-01,1158,22,Monthly,Electronic Wallet,false,1,1,Regular customer,No
+C00023,29,Male,North,2021-10-31,1048,48,Monthly,Electronic Wallet,true,0,2,Contacted support,No
+C00024,69,Female,Central,2021-11-13,1196,56,Monthly,Bank Transfer,true,2,3,Asked about pricing,No
+C00025,45,Male,Central,2022-04-01,764,2,Monthly,Bank Transfer,true,1,1,Asked about pricing,No
+C00026,69,Female,East,2023-11-10,1010,56,Monthly,Credit Card,true,1,1,Contacted support,No
+C00027,20,Female,South,2023-11-14,731,8,Two Year,Bank Transfer,true,0,5,Regular customer,No
+C00028,64,Female,South,2025-01-14,1404,28,Monthly,Electronic Wallet,true,1,3,Uses mobile app,No
+C00029,63,Male,East,2021-01-01,948,19,One Year,Credit Card,true,2,2,Uses mobile app,No
+C00030,60,Female,East,2024-07-20,1125,21,Monthly,Bank Transfer,true,3,2,Requested discount,No
+C00031,62,Female,North,2024-07-13,744,20,Monthly,Credit Card,true,0,4,Requested discount,No
+C00032,34,Female,East,2021-09-06,1100,10,One Year,Credit Card,true,0,5,Contacted support,No
+C00033,54,Male,East,2022-07-22,1143,39,Monthly,Bank Transfer,true,4,4,Requested discount,No
+C00034,64,Male,North,2021-05-12,826,19,Monthly,Bank Transfer,true,0,2,Contacted support,No
+C00035,32,Female,East,2023-05-09,1124,54,Monthly,Electronic Wallet,true,1,3,Requested discount,No
+C00036,,Male,North,2024-06-28,1203,32,Monthly,Bank Transfer,true,1,4,Requested discount,No
+C00037,20,Male,Central,2023-02-16,995,6,One Year,Credit Card,true,0,4,Uses mobile app,No
+C00038,24,Female,South,2021-03-05,1337,31,Monthly,Electronic Wallet,true,0,1,Asked about pricing,Yes
+C00039,27,Female,East,2025-01-11,1261,31,One Year,Electronic Wallet,false,2,3,Regular customer,No
+C00040,56,Male,East,2022-05-13,1337,2,Two Year,Electronic Wallet,false,4,2,Regular customer,No
+C00041,70,Female,South,2023-05-11,1303,8,One Year,Electronic Wallet,false,2,3,Contacted support,Yes
+C00042,72,Female,South,2025-02-06,1116,30,One Year,Bank Transfer,true,2,5,Requested discount,No
+C00043,24,Male,East,2022-12-28,651,18,Two Year,Credit Card,true,1,4,Uses mobile app,No
+C00044,36,Female,Central,2024-08-15,1026,36,Monthly,Credit Card,true,2,4,,No
+C00045,33,Male,East,2024-12-10,1203,26,One Year,Bank Transfer,true,2,3,Contacted support,No
+C00046,31,Female,Central,2023-12-11,1273,21,Monthly,Electronic Wallet,true,0,4,Requested discount,No
+C00047,33,Female,South,2024-07-30,,24,Monthly,Credit Card,true,0,1,Contacted support,No
+C00048,49,Male,East,2024-11-06,745,29,Monthly,Credit Card,true,0,1,Regular customer,No
+C00049,24,Female,East,2022-09-18,1327,16,Monthly,Bank Transfer,true,1,4,Requested discount,No
+C00050,67,Female,Central,2024-11-12,532,14,One Year,Bank Transfer,false,0,5,Requested discount,No
+C00051,37,Female,South,2024-01-21,777,45,Two Year,Credit Card,true,3,5,Asked about pricing,No
+C00052,23,Male,East,2023-10-09,948,4,Monthly,Bank Transfer,true,0,3,Contacted support,No
+C00053,39,Female,North,2024-08-27,1124,39,Monthly,Credit Card,true,5,3,Contacted support,No
+C00054,59,Male,South,2024-11-21,889,53,Monthly,Credit Card,true,1,3,Contacted support,No
+C00055,54,Male,South,2024-01-17,671,3,Monthly,Bank Transfer,true,0,4,Contacted support,No
+C00056,67,Female,South,2021-03-01,1355,32,One Year,Credit Card,true,2,3,,No
+C00057,54,Female,North,2025-01-07,742,1,One Year,Credit Card,true,1,1,Uses mobile app,No
+C00058,49,Male,Central,2022-07-20,1029,16,Monthly,Credit Card,true,4,5,Contacted support,No
+C00059,19,Male,Central,2023-02-12,1150,19,One Year,Electronic Wallet,true,1,4,Contacted support,No
+C00060,34,Female,South,2024-08-28,1514,37,Monthly,Bank Transfer,true,3,4,Asked about pricing,No
+C00061,56,Female,East,2021-06-03,1080,22,Two Year,Bank Transfer,true,0,2,Contacted support,No
+C00062,44,Male,South,2022-04-26,816,42,Monthly,Bank Transfer,true,2,4,,No
+C00063,24,Female,East,2021-04-25,457,28,Two Year,Electronic Wallet,true,0,3,Uses mobile app,No
+C00064,45,Female,Central,2024-04-09,776,37,One Year,Credit Card,true,0,4,Asked about pricing,No
+C00065,61,Male,Central,2023-05-19,716,1,Two Year,Bank Transfer,true,0,3,,No
+C00066,43,Male,South,2021-01-17,1454,55,Monthly,Credit Card,false,2,3,Requested discount,Yes
+C00067,57,Female,South,2024-09-12,1364,48,Monthly,Bank Transfer,true,0,2,,No
+C00068,60,Female,South,2021-12-26,1169,3,Monthly,Bank Transfer,true,3,1,Asked about pricing,No
+C00069,52,Male,East,2023-08-18,1031,33,Two Year,Credit Card,true,5,3,Regular customer,No
+C00070,65,Male,North,2024-10-09,701,44,Two Year,Electronic Wallet,true,3,1,,No
+C00071,42,Female,South,2024-12-06,1400,7,One Year,Bank Transfer,true,4,2,Uses mobile app,No
+C00072,21,Female,Central,2024-11-27,1009,20,Two Year,Credit Card,true,4,2,Requested discount,No
+C00073,45,Male,South,2023-01-13,1125,42,Monthly,Bank Transfer,false,0,3,Regular customer,No
+C00074,60,Female,North,2024-05-07,1107,23,Monthly,Bank Transfer,false,4,4,Regular customer,No
+C00075,69,Female,Central,2024-05-05,986,37,Monthly,Electronic Wallet,true,3,2,Regular customer,No
+C00076,53,Female,Central,2021-04-18,546,17,One Year,Credit Card,true,0,2,Asked about pricing,No
+C00077,49,Female,East,2023-07-28,1259,29,One Year,Electronic Wallet,false,1,5,,No
+C00078,44,Male,North,2024-07-02,817,28,One Year,Bank Transfer,true,4,3,,Yes
+C00079,57,Male,North,2024-02-04,1501,34,Monthly,Electronic Wallet,true,3,1,,No
+C00080,45,Male,North,2024-11-07,968,22,One Year,Bank Transfer,true,1,3,Contacted support,No
+C00081,25,Female,South,2023-05-17,1321,48,One Year,Credit Card,true,2,4,,No
+C00082,25,Male,Central,2022-07-25,1211,37,Monthly,Credit Card,true,3,3,Requested discount,Yes
+C00083,68,Female,South,2022-12-20,846,53,One Year,Electronic Wallet,true,0,3,Regular customer,No
+C00084,23,Female,Central,2022-10-27,963,10,One Year,Credit Card,true,1,4,Requested discount,No
+C00085,67,Male,East,2023-11-16,1204,40,Monthly,Credit Card,true,2,4,Regular customer,No
+C00086,56,Female,Central,2022-03-09,934,32,Monthly,Bank Transfer,false,1,5,Asked about pricing,Yes
+C00087,50,Male,Central,2023-07-31,768,48,Monthly,Credit Card,false,1,3,Regular customer,No
+C00088,64,Male,North,2024-11-13,1577,41,Monthly,Credit Card,true,5,2,Uses mobile app,Yes
+C00089,56,Male,South,2023-11-11,1318,26,Monthly,Bank Transfer,false,0,2,Asked about pricing,Yes
+C00090,71,Female,Central,2024-07-10,1256,42,One Year,Credit Card,true,1,2,Contacted support,Yes
+C00091,62,Male,South,2022-07-17,1056,60,Two Year,Electronic Wallet,true,0,1,Requested discount,No
+C00092,47,Female,North,2021-03-26,1374,3,Monthly,Bank Transfer,true,2,5,Contacted support,No
+C00093,57,Male,North,2021-12-20,921,31,Monthly,Credit Card,true,3,3,Regular customer,No
+C00094,52,Male,East,2024-08-18,778,40,Monthly,Bank Transfer,true,1,3,Uses mobile app,No
+C00095,37,Female,South,2024-12-01,847,17,One Year,Electronic Wallet,true,0,2,,No
+C00096,38,Female,North,2022-01-05,798,36,Monthly,Bank Transfer,true,2,4,Asked about pricing,No
+C00097,27,Female,South,2022-01-06,1275,10,Monthly,Credit Card,false,4,5,,Yes
+C00098,47,Female,East,2023-08-19,1024,3,Monthly,Electronic Wallet,true,2,4,Asked about pricing,Yes
+C00099,48,Male,Central,2023-09-12,1091,50,Monthly,Bank Transfer,false,3,5,Uses mobile app,Yes
+C00100,26,Male,East,2022-03-31,983,19,Monthly,Credit Card,true,4,2,Contacted support,No
+C00101,44,Female,South,2021-10-27,1335,33,Monthly,Bank Transfer,true,0,3,Asked about pricing,No
+C00102,72,Male,North,2025-01-29,903,9,One Year,Bank Transfer,true,4,1,Requested discount,No
+C00103,38,Male,North,2024-03-23,686,8,Monthly,Bank Transfer,true,0,,Asked about pricing,No
+C00104,41,Female,South,2023-03-11,1049,16,One Year,Credit Card,true,0,5,Contacted support,No
+C00105,66,Male,Central,2022-12-23,1175,2,Monthly,Credit Card,true,3,1,Requested discount,Yes
+C00106,62,Female,Central,2022-02-13,616,30,Two Year,Bank Transfer,false,0,4,Regular customer,No
+C00107,71,Female,South,2023-01-24,1064,35,Monthly,Credit Card,true,1,1,Contacted support,Yes
+C00108,43,Male,South,2021-06-11,714,22,Two Year,Bank Transfer,true,4,5,Contacted support,No
+C00109,39,Male,South,2021-03-28,1179,7,Monthly,Electronic Wallet,false,1,4,,Yes
+C00110,36,Female,East,2024-10-20,611,41,Two Year,Credit Card,true,1,2,Contacted support,No
+C00111,42,Female,Central,2023-12-21,858,24,Monthly,Electronic Wallet,true,2,3,Uses mobile app,No
+C00112,26,Male,North,2022-08-08,804,2,One Year,Bank Transfer,true,1,3,,No
+C00113,23,Male,North,2024-01-16,1561,29,Monthly,Electronic Wallet,true,3,3,Uses mobile app,Yes
+C00114,63,Female,North,2024-02-09,1450,41,Monthly,Bank Transfer,true,5,2,Requested discount,Yes
+C00115,58,Male,East,2022-10-12,800,57,Monthly,Bank Transfer,true,1,4,,Yes
+C00116,27,Female,Central,2021-12-04,1115,57,One Year,Electronic Wallet,true,1,1,Asked about pricing,No
+C00117,52,Male,Central,2023-12-29,1420,58,Monthly,Credit Card,true,2,5,Regular customer,Yes
+C00118,28,Male,North,2022-06-27,1351,11,One Year,Electronic Wallet,false,3,1,,No
+C00119,20,Male,South,2021-11-20,539,32,Two Year,Electronic Wallet,true,1,4,Contacted support,No
+C00120,28,Male,East,2023-08-14,518,21,Two Year,Bank Transfer,true,0,3,Regular customer,No
+C00121,37,Female,Central,2023-10-18,769,25,Two Year,Bank Transfer,true,3,5,Requested discount,No
+C00122,,Female,South,2022-08-09,1339,26,Monthly,Credit Card,true,0,3,Requested discount,No
+C00123,35,Male,North,2021-05-31,1096,47,Monthly,Bank Transfer,true,1,5,Contacted support,No
+C00124,58,Female,East,2022-02-12,959,44,One Year,Credit Card,true,1,3,Requested discount,No
+C00125,27,Male,Central,2023-03-16,1407,46,Monthly,Bank Transfer,false,2,5,Requested discount,Yes
+C00126,72,Male,East,2024-04-10,947,33,Monthly,Electronic Wallet,true,3,3,Uses mobile app,No
+C00127,20,Female,North,2023-02-18,1414,39,Monthly,Electronic Wallet,true,2,2,Asked about pricing,No
+C00128,63,Male,East,2025-01-29,1296,8,Monthly,Bank Transfer,true,0,2,Regular customer,No
+C00129,61,Female,East,2025-01-16,1582,31,Monthly,Bank Transfer,true,4,3,,No
+C00130,31,Female,South,2022-12-16,1335,16,Monthly,Bank Transfer,true,3,2,Requested discount,Yes
+C00131,26,Male,South,2021-06-11,1099,37,One Year,Bank Transfer,true,5,2,Uses mobile app,No
+C00132,32,Male,Central,2023-12-24,581,13,One Year,Bank Transfer,true,0,5,Asked about pricing,No
+C00133,64,Female,Central,2022-08-12,929,31,Monthly,Credit Card,true,1,4,Uses mobile app,No
+C00134,60,Female,Central,2023-03-25,762,37,Monthly,Electronic Wallet,true,1,2,Contacted support,No
+C00135,37,Female,South,2023-08-17,862,57,Monthly,Bank Transfer,true,1,5,Uses mobile app,No
+C00136,48,Female,South,2024-08-01,1032,42,Monthly,Credit Card,true,3,5,Contacted support,Yes
+C00137,61,Male,South,2022-07-01,1131,7,Monthly,Credit Card,true,4,,Uses mobile app,Yes
+C00138,60,Female,East,2024-11-14,1305,24,One Year,Credit Card,true,1,4,Regular customer,No
+C00139,33,Female,East,2023-08-23,1293,15,Two Year,Bank Transfer,true,3,5,Requested discount,No
+C00140,62,Male,South,2022-02-19,1090,49,One Year,Credit Card,false,0,5,Requested discount,No
+C00141,47,Male,North,2023-05-01,1214,8,One Year,Electronic Wallet,true,4,4,Contacted support,Yes
+C00142,38,Female,Central,2021-05-04,1497,47,Monthly,Bank Transfer,true,2,1,Regular customer,Yes
+C00143,30,Male,South,2024-10-30,1331,50,Monthly,Electronic Wallet,true,5,4,,Yes
+C00144,26,Female,Central,2024-01-21,1049,12,Two Year,Bank Transfer,true,3,1,Contacted support,No
+C00145,41,Female,North,2021-05-18,851,10,Monthly,Electronic Wallet,true,3,4,Regular customer,Yes
+C00146,22,Male,Central,2025-02-07,936,16,One Year,Bank Transfer,false,2,1,Requested discount,Yes
+C00147,39,Female,East,2021-12-25,1330,16,Monthly,Credit Card,true,1,1,,No
+C00148,41,Male,East,2022-04-07,1135,42,One Year,Electronic Wallet,true,1,3,Uses mobile app,No
+C00149,22,Female,East,2023-01-30,750,36,Monthly,Bank Transfer,true,0,2,Regular customer,No
+C00150,43,Female,Central,2022-03-04,1267,44,One Year,Credit Card,true,3,5,Uses mobile app,No
+C00151,31,Female,Central,2023-12-29,1014,48,Monthly,Bank Transfer,true,1,2,,No
+C00152,50,Male,South,2022-03-30,936,30,Monthly,Electronic Wallet,true,4,3,,No
+C00153,56,Female,South,2024-11-03,1181,47,Monthly,Credit Card,true,0,5,Uses mobile app,No
+C00154,60,Male,Central,2021-05-01,1225,48,Monthly,Credit Card,true,0,5,Requested discount,No
+C00155,61,Female,Central,2021-05-04,1047,4,One Year,Bank Transfer,false,0,2,Requested discount,No
+C00156,61,Male,North,2024-11-30,963,32,Monthly,Electronic Wallet,true,0,3,,Yes
+C00157,25,Male,South,2022-05-14,1140,34,Monthly,Credit Card,false,1,4,,No
+C00158,60,Female,East,2021-12-17,1237,55,One Year,Credit Card,true,1,5,Regular customer,Yes
+C00159,55,Female,Central,2024-11-02,457,55,Two Year,Electronic Wallet,true,0,,Uses mobile app,No
+C00160,39,Female,East,2023-03-08,876,2,Two Year,Electronic Wallet,false,4,3,,No
+C00161,27,Female,South,2024-06-11,487,51,Two Year,Electronic Wallet,true,0,,Requested discount,No
+C00162,36,Female,South,2023-02-18,1216,51,Two Year,Bank Transfer,true,2,4,Regular customer,No
+C00163,23,Female,East,2022-07-07,1040,6,Monthly,Bank Transfer,false,1,1,Regular customer,Yes
+C00164,54,Female,South,2021-01-26,1112,33,Monthly,Credit Card,true,2,5,Uses mobile app,No
+C00165,54,Female,East,2021-12-09,914,58,Two Year,Credit Card,true,0,3,Contacted support,No
+C00166,42,Male,Central,2024-06-24,870,17,Two Year,Electronic Wallet,true,1,2,Contacted support,No
+C00167,71,Female,South,2022-10-16,646,53,Two Year,Electronic Wallet,true,1,2,Uses mobile app,No
+C00168,69,Male,South,2024-02-01,1228,16,Monthly,Bank Transfer,false,0,5,Regular customer,Yes
+C00169,47,Female,East,2021-11-12,1027,52,Monthly,Electronic Wallet,true,2,2,,Yes
+C00170,57,Male,North,2021-06-24,1244,31,One Year,Electronic Wallet,true,3,3,Regular customer,No
+C00171,60,Male,South,2023-11-12,1045,40,Monthly,Electronic Wallet,false,5,4,,Yes
+C00172,47,Female,South,2021-06-25,1370,24,Monthly,Electronic Wallet,false,5,4,Regular customer,No
+C00173,40,Male,South,2022-09-07,1048,30,One Year,Electronic Wallet,true,1,4,Regular customer,No
+C00174,60,Female,Central,2023-04-10,1113,7,One Year,Credit Card,true,2,3,,No
+C00175,20,Male,East,2021-05-09,1305,48,One Year,Credit Card,false,1,2,Requested discount,No
+C00176,39,Male,South,2023-07-27,896,13,Monthly,Bank Transfer,true,2,5,Requested discount,Yes
+C00177,58,Male,North,2023-03-07,1380,38,Monthly,Credit Card,false,0,1,Contacted support,Yes
+C00178,50,Female,Central,2023-01-06,1186,41,Monthly,Electronic Wallet,false,1,2,Regular customer,No
+C00179,54,Male,East,2022-03-28,724,33,One Year,Bank Transfer,true,2,4,Uses mobile app,No
+C00180,68,Female,North,2021-03-27,960,30,One Year,Bank Transfer,true,1,5,,No
+C00181,66,Male,North,2021-08-29,674,54,One Year,Credit Card,true,1,3,Asked about pricing,No
+C00182,64,Female,Central,2024-01-09,1240,40,One Year,Credit Card,true,3,1,Asked about pricing,No
+C00183,36,Female,Central,2021-09-17,1228,55,Monthly,Electronic Wallet,true,5,4,,No
+C00184,72,Male,East,2024-07-21,914,16,One Year,Electronic Wallet,true,0,3,Regular customer,No
+C00185,42,Female,North,2021-05-10,1289,30,Two Year,Bank Transfer,true,3,4,Requested discount,No
+C00186,50,Male,Central,2021-04-05,1478,18,Monthly,Bank Transfer,true,2,,Regular customer,No
+C00187,29,Female,Central,2023-01-09,1170,29,Monthly,Bank Transfer,false,4,3,Uses mobile app,Yes
+C00188,22,Female,East,2024-04-30,1128,26,One Year,Electronic Wallet,false,2,,Asked about pricing,Yes
+C00189,40,Female,East,2023-01-23,774,53,Monthly,Bank Transfer,false,0,4,Uses mobile app,Yes
+C00190,27,Female,North,2021-11-07,738,42,Two Year,Credit Card,true,2,2,Contacted support,No
+C00191,25,Male,South,2021-06-22,1058,9,One Year,Electronic Wallet,true,5,3,Asked about pricing,Yes
+C00192,68,Male,Central,2021-04-22,1126,45,Monthly,Electronic Wallet,false,1,5,Asked about pricing,No
+C00193,,Male,South,2023-08-23,1229,5,Monthly,Credit Card,true,0,5,Regular customer,No
+C00194,21,Male,East,2021-11-09,1274,60,Monthly,Bank Transfer,false,1,4,Uses mobile app,No
+C00195,70,Female,South,2021-08-26,868,10,Monthly,Bank Transfer,false,2,2,Contacted support,No
+C00196,61,Female,North,2021-09-17,935,48,Monthly,Credit Card,true,0,3,,No
+C00197,68,Male,North,2023-01-08,1233,58,Monthly,Bank Transfer,true,1,5,Regular customer,No
+C00198,35,Female,Central,2023-08-25,847,50,Monthly,Electronic Wallet,false,3,1,Uses mobile app,Yes
+C00199,21,Male,Central,2021-06-09,912,36,One Year,Electronic Wallet,true,1,4,Requested discount,No
+C00200,,Male,North,2024-02-07,1068,15,One Year,Credit Card,true,4,3,Contacted support,No
+C00201,,Male,East,2022-05-18,1364,48,One Year,Bank Transfer,true,5,2,Asked about pricing,No
+C00202,41,Male,North,2023-12-22,889,41,Two Year,Credit Card,true,3,4,Asked about pricing,No
+C00203,28,Female,East,2023-11-02,866,46,Monthly,Credit Card,true,2,3,Asked about pricing,No
+C00204,22,Female,South,2022-10-31,987,28,One Year,Credit Card,true,1,3,Uses mobile app,No
+C00205,27,Female,North,2022-03-02,653,50,One Year,Credit Card,true,0,4,Contacted support,No
+C00206,29,Female,Central,2022-12-30,1423,52,One Year,Electronic Wallet,false,3,3,Contacted support,Yes
+C00207,30,Female,North,2022-04-01,528,2,Two Year,Bank Transfer,false,1,2,Asked about pricing,No
+C00208,60,Female,North,2021-07-08,1259,6,One Year,Bank Transfer,true,5,2,Uses mobile app,No
+C00209,55,Male,North,2022-07-18,804,28,One Year,Bank Transfer,false,1,4,Uses mobile app,No
+C00210,58,Male,East,2023-12-13,959,16,One Year,Bank Transfer,true,0,3,Asked about pricing,No
+C00211,43,Male,South,2022-10-16,1026,51,One Year,Bank Transfer,true,4,5,Requested discount,No
+C00212,22,Male,Central,2021-04-25,931,52,Two Year,Electronic Wallet,true,5,1,Asked about pricing,Yes
+C00213,72,Male,South,2024-02-29,1250,55,Monthly,Credit Card,true,4,1,Asked about pricing,No
+C00214,50,Female,North,2022-11-11,1209,35,Monthly,Bank Transfer,false,0,5,Requested discount,No
+C00215,70,Female,Central,2021-05-29,1058,55,Two Year,Credit Card,true,2,2,Uses mobile app,No
+C00216,40,Male,East,2024-06-10,1355,20,Monthly,Credit Card,true,2,2,Uses mobile app,No
+C00217,38,Female,North,2024-05-18,1331,47,One Year,Credit Card,true,4,5,Uses mobile app,Yes
+C00218,55,Male,North,2024-10-04,500,7,Two Year,Credit Card,false,0,,,No
+C00219,32,Male,North,2023-04-28,1069,16,One Year,Bank Transfer,true,2,1,Contacted support,No
+C00220,72,Female,Central,2021-08-03,911,31,One Year,Electronic Wallet,true,1,1,Regular customer,No
+C00221,23,Male,East,2023-06-09,688,36,Two Year,Credit Card,true,2,4,Asked about pricing,No
+C00222,45,Male,South,2023-10-03,,45,One Year,Electronic Wallet,false,1,1,Asked about pricing,No
+C00223,71,Female,North,2021-08-25,613,43,One Year,Bank Transfer,true,0,2,Uses mobile app,No
+C00224,35,Female,South,2023-08-11,795,6,One Year,Bank Transfer,false,4,3,Uses mobile app,Yes
+C00225,67,Male,East,2023-12-07,867,45,One Year,Credit Card,true,5,5,Contacted support,No
+C00226,55,Female,East,2024-10-19,1419,57,Monthly,Bank Transfer,true,4,1,Requested discount,No
+C00227,29,Female,East,2024-05-03,1172,14,One Year,Credit Card,false,0,4,Uses mobile app,No
+C00228,24,Male,South,2023-05-10,1223,25,One Year,Electronic Wallet,true,1,1,Regular customer,No
+C00229,67,Female,South,2023-09-22,845,7,Two Year,Electronic Wallet,true,3,3,Requested discount,No
+C00230,,Male,North,2022-07-05,635,40,One Year,Electronic Wallet,true,1,3,Uses mobile app,No
+C00231,36,Female,Central,2023-05-04,998,54,Monthly,Electronic Wallet,true,0,4,Requested discount,No
+C00232,71,Male,North,2021-10-05,1311,27,One Year,Electronic Wallet,false,1,2,Requested discount,No
+C00233,72,Female,East,2023-08-09,690,13,Two Year,Credit Card,true,0,3,Requested discount,No
+C00234,34,Female,East,2024-11-11,1044,24,Monthly,Bank Transfer,true,2,3,Regular customer,No
+C00235,55,Female,Central,2021-09-28,1163,50,Two Year,Credit Card,true,1,4,,Yes
+C00236,57,Male,East,2024-10-18,853,52,Two Year,Electronic Wallet,true,4,3,Requested discount,No
+C00237,51,Male,South,2022-07-22,803,43,Two Year,Bank Transfer,false,2,4,Uses mobile app,No
+C00238,31,Female,East,2022-08-29,1451,10,Monthly,Credit Card,true,2,2,Uses mobile app,Yes
+C00239,56,Male,Central,2022-09-07,1207,46,Two Year,Credit Card,true,2,4,Asked about pricing,No
+C00240,25,Female,South,2022-11-10,1094,31,Monthly,Bank Transfer,true,2,2,Uses mobile app,No
+C00241,49,Female,East,2022-09-04,1327,4,Two Year,Electronic Wallet,false,4,5,Contacted support,Yes
+C00242,31,Male,Central,2021-12-29,,22,Monthly,Electronic Wallet,true,1,2,Uses mobile app,Yes
+C00243,,Male,North,2023-09-05,1083,50,Monthly,Credit Card,true,0,4,Contacted support,No
+C00244,19,Female,North,2021-07-30,1132,58,Monthly,Electronic Wallet,true,2,2,Contacted support,Yes
+C00245,21,Male,East,2022-01-21,1131,20,Two Year,Bank Transfer,true,4,2,Asked about pricing,No
+C00246,33,Female,North,2021-03-18,1368,15,One Year,Credit Card,false,2,2,Contacted support,No
+C00247,22,Female,North,2022-06-02,799,39,Two Year,Electronic Wallet,true,0,1,Contacted support,No
+C00248,19,Male,Central,2021-08-22,1357,20,Monthly,Credit Card,true,1,1,Regular customer,Yes
+C00249,72,Male,South,2023-09-12,,34,Two Year,Bank Transfer,true,0,5,Uses mobile app,No
+C00250,26,Female,North,2024-08-12,798,54,One Year,Bank Transfer,true,3,1,Asked about pricing,No
+C00251,22,Male,South,2021-04-04,813,7,One Year,Credit Card,true,3,3,Regular customer,Yes
+C00252,41,Male,North,2023-07-24,1135,58,Monthly,Electronic Wallet,false,1,3,Uses mobile app,No
+C00253,45,Female,Central,2024-04-24,683,42,Two Year,Credit Card,true,2,1,Contacted support,Yes
+C00254,43,Female,East,2022-06-20,1341,50,Monthly,Credit Card,true,4,1,,Yes
+C00255,68,Female,South,2023-09-14,1262,48,One Year,Electronic Wallet,false,1,5,Uses mobile app,No
+C00256,71,Female,North,2021-12-05,1000,36,Two Year,Electronic Wallet,true,2,2,Regular customer,No
+C00257,36,Male,East,2023-10-18,1421,4,Monthly,Electronic Wallet,true,3,1,Contacted support,Yes
+C00258,20,Female,North,2024-09-02,1355,7,Monthly,Credit Card,true,3,5,,No
+C00259,71,Male,South,2022-12-01,1194,15,Two Year,Bank Transfer,false,2,1,Uses mobile app,Yes
+C00260,52,Female,East,2021-09-05,1155,24,One Year,Credit Card,false,0,4,Contacted support,No
+C00261,40,Female,East,2021-01-09,722,7,One Year,Credit Card,true,1,5,Requested discount,No
+C00262,56,Female,Central,2023-02-27,739,31,Two Year,Credit Card,true,0,5,Contacted support,No
+C00263,36,Male,Central,2024-12-07,934,26,Two Year,Bank Transfer,true,0,5,Requested discount,No
+C00264,59,Male,South,2021-12-31,1555,14,Monthly,Electronic Wallet,true,4,2,Requested discount,No
+C00265,67,Male,South,2023-02-20,1285,23,One Year,Electronic Wallet,true,4,4,Asked about pricing,Yes
+C00266,69,Male,Central,2023-07-16,1129,11,Two Year,Electronic Wallet,false,3,3,Regular customer,Yes
+C00267,33,Female,South,2024-11-04,1036,48,One Year,Bank Transfer,true,2,1,Uses mobile app,No
+C00268,31,Female,South,2022-02-01,776,40,Two Year,Bank Transfer,true,3,5,Uses mobile app,No
+C00269,30,Female,East,2021-01-12,1323,48,Monthly,Bank Transfer,false,1,,Uses mobile app,No
+C00270,39,Male,East,2022-03-27,1559,39,Monthly,Electronic Wallet,true,3,5,Asked about pricing,Yes
+C00271,53,Female,Central,2024-06-20,1003,35,Monthly,Bank Transfer,true,2,3,Requested discount,No
+C00272,60,Male,Central,2024-10-29,1139,1,Monthly,Bank Transfer,true,4,5,Uses mobile app,No
+C00273,35,Male,East,2021-06-18,782,35,One Year,Credit Card,true,1,3,Regular customer,No
+C00274,19,Female,East,2023-06-11,1554,41,Monthly,Electronic Wallet,true,3,2,,No
+C00275,20,Female,North,2022-06-14,1118,30,One Year,Credit Card,true,0,3,Contacted support,No
+C00276,20,Female,North,2023-10-27,769,25,One Year,Electronic Wallet,false,3,5,Regular customer,No
+C00277,37,Male,North,2024-01-23,865,49,Two Year,Bank Transfer,false,1,5,Uses mobile app,No
+C00278,69,Female,Central,2021-06-24,933,56,One Year,Bank Transfer,true,0,1,Uses mobile app,No
+C00279,32,Female,Central,2024-10-06,608,27,Two Year,Electronic Wallet,true,0,5,Requested discount,No
+C00280,54,Male,North,2023-01-02,1083,30,One Year,Credit Card,true,1,2,Asked about pricing,No
+C00281,23,Male,South,2023-01-17,936,58,Monthly,Bank Transfer,true,2,3,Uses mobile app,No
+C00282,69,Male,South,2023-08-06,1034,15,One Year,Electronic Wallet,true,3,2,Contacted support,No
+C00283,30,Female,Central,2024-07-17,604,42,One Year,Bank Transfer,true,1,1,Regular customer,No
+C00284,32,Male,Central,2022-08-19,1328,59,Monthly,Bank Transfer,true,1,2,Asked about pricing,No
+C00285,51,Female,Central,2021-10-27,1164,1,One Year,Electronic Wallet,true,1,2,,No
+C00286,67,Male,Central,2023-07-21,1039,32,Monthly,Bank Transfer,true,0,2,Regular customer,No
+C00287,52,Male,Central,2021-06-09,1254,41,One Year,Electronic Wallet,true,1,4,Requested discount,No
+C00288,44,Male,East,2022-04-17,892,23,One Year,Bank Transfer,true,4,1,Regular customer,No
+C00289,29,Female,East,2024-04-24,1185,24,One Year,Credit Card,true,3,1,Asked about pricing,No
+C00290,27,Female,Central,2024-05-12,1059,37,One Year,Credit Card,true,0,3,Requested discount,No
+C00291,71,Male,East,2024-04-08,995,19,Two Year,Credit Card,false,3,2,Asked about pricing,No
+C00292,62,Female,Central,2023-10-30,672,22,Two Year,Electronic Wallet,false,1,2,,No
+C00293,49,Female,North,2024-10-21,1137,58,One Year,Credit Card,true,1,2,,No
+C00294,63,Male,South,2022-04-22,917,34,Monthly,Bank Transfer,false,2,5,Regular customer,Yes
+C00295,31,Female,North,2021-08-07,908,1,One Year,Credit Card,true,1,2,Asked about pricing,No
+C00296,53,Male,East,2023-01-29,1265,28,One Year,Electronic Wallet,true,3,4,Requested discount,No
+C00297,41,Female,North,2023-11-08,860,50,One Year,Electronic Wallet,true,3,4,Contacted support,No
+C00298,62,Female,North,2022-06-23,1280,46,Monthly,Bank Transfer,true,3,4,Asked about pricing,Yes
+C00299,44,Female,Central,2023-11-28,1312,40,One Year,Bank Transfer,false,2,4,Uses mobile app,No
+C00300,63,Female,South,2023-03-30,618,15,One Year,Electronic Wallet,true,0,1,Uses mobile app,No

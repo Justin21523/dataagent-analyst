@@ -1,0 +1,170 @@
+<section class="hero-card">
+        <div>
+          <p class="eyebrow">Phase 4</p>
+          <h2>Visualization Recommendation Engine</h2>
+          <p class="hero-text">
+            Upload CSV datasets, profile columns, run EDA, and automatically render
+            recommended charts based on column types and data quality signals.
+          </p>
+        </div>
+
+        <button id="checkApiButton" class="primary-button" type="button">
+          Check Backend API
+        </button>
+      </section>
+
+<section class="workspace-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Upload</span>
+              <h3>Upload CSV Dataset</h3>
+            </div>
+          </div>
+
+          <form id="uploadForm" class="upload-box">
+            <input id="csvFileInput" type="file" accept=".csv,text/csv" />
+            <button class="primary-button" type="submit">Upload Dataset</button>
+          </form>
+
+          <p class="helper-text">
+            Try the sample file:
+            <code>data/samples/customer_churn_sample.csv</code>
+          </p>
+
+          <pre id="uploadStatus" class="code-output small-output">Waiting for upload...</pre>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">API</span>
+              <h3>Backend Health</h3>
+            </div>
+          </div>
+
+          <pre id="healthOutput" class="code-output small-output">Waiting for API response...</pre>
+        </article>
+      </section>
+
+      <section class="workspace-grid dataset-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Registry</span>
+              <h3>Datasets</h3>
+            </div>
+
+            <button id="refreshDatasetsButton" class="secondary-button" type="button">
+              Refresh
+            </button>
+          </div>
+
+          <div id="datasetList" class="dataset-list">
+            <p class="empty-state">No datasets loaded yet.</p>
+          </div>
+        </article>
+
+        <article class="panel preview-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Preview</span>
+              <h3 id="previewTitle">Dataset Preview</h3>
+            </div>
+          </div>
+
+          <div id="previewMeta" class="preview-meta">
+            Select a dataset to preview rows.
+          </div>
+
+          <div id="previewTable" class="table-wrapper">
+            <p class="empty-state">No preview available.</p>
+          </div>
+        </article>
+      </section>
+
+<section class="workspace-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Versions</span>
+              <h3>Dataset Versions</h3>
+            </div>
+
+            <button id="refreshDatasetVersionsButton" class="secondary-button" type="button">
+              Refresh Versions
+            </button>
+          </div>
+
+          <div id="datasetVersionsPanel" class="dataset-list">
+            <p class="empty-state">Select a dataset to inspect versions.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Transform</span>
+              <h3>Transformation Recipe</h3>
+            </div>
+          </div>
+
+          <textarea
+            id="datasetTransformRecipeInput"
+            class="json-input"
+            rows="12"
+            spellcheck="false"
+          >{
+  "fill_missing": [],
+  "drop_columns": [],
+  "datetime_parts": []
+}</textarea>
+
+          <label for="transformDropColumnsInput">Drop Columns</label>
+          <input
+            id="transformDropColumnsInput"
+            type="text"
+            placeholder="Comma-separated columns"
+          />
+
+          <label for="transformFillColumnInput">Fill Missing Column</label>
+          <input
+            id="transformFillColumnInput"
+            type="text"
+            placeholder="Example: age"
+          />
+
+          <label for="transformFillStrategySelect">Fill Strategy</label>
+          <select id="transformFillStrategySelect">
+            <option value="median">Median</option>
+            <option value="mean">Mean</option>
+            <option value="mode">Mode</option>
+            <option value="constant">Constant</option>
+          </select>
+
+          <label for="transformFillValueInput">Fill Constant Value</label>
+          <input
+            id="transformFillValueInput"
+            type="text"
+            placeholder="Used only for constant"
+          />
+
+          <label for="transformDatetimeColumnInput">Datetime Parts Column</label>
+          <input
+            id="transformDatetimeColumnInput"
+            type="text"
+            placeholder="Example: signup_date"
+          />
+
+          <label class="checkbox-row">
+            <input id="transformDropDuplicatesCheckbox" type="checkbox" />
+            Drop duplicate rows
+          </label>
+
+          <button id="applyDatasetTransformButton" class="primary-button" type="button">
+            Apply Transform
+          </button>
+
+          <pre id="datasetTransformOutput" class="code-output small-output">No transform run yet.</pre>
+        </article>
+      </section>

@@ -1,0 +1,80 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 2rem clamp(1rem, 4vw, 4rem);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  letter-spacing: -0.05em;
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto 4rem;
+}
+
+.hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  letter-spacing: -0.04em;
+}
+
+.hero-text {
+  max-width: 62ch;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dataset-grid,
+.profile-grid {
+  grid-template-columns: 0.8fr 1.2fr;
+}
+
+.eda-section {
+  margin-top: 1.5rem;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .app-header,
+  .hero-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspace-grid,
+  .dataset-grid,
+  .profile-grid,
+  .eda-grid {
+    grid-template-columns: 1fr;
+  }
+}

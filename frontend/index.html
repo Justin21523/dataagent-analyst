@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataAgent Analyst</title>
+    <link rel="stylesheet" href="./css/base.css" />
+    <script src="./vendor/echarts.min.js"></script>
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body>
+    <!-- 頂部導覽列：維持英文介面，方便作品集與面試展示。 -->
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">AI Data Analysis Workbench</p>
+        <h1>DataAgent Analyst</h1>
+      </div>
+
+      <div id="apiStatus" class="status-pill checking">Checking API...</div>
+    </header>
+
+<nav class="workspace-nav" aria-label="Workspace navigation">
+      <div class="workspace-nav-inner">
+        <button class="workspace-nav-button active" type="button" data-view-target="overview">
+          Overview
+        </button>
+        <button class="workspace-nav-button" type="button" data-view-target="analysis">
+          Analysis
+        </button>
+        <button class="workspace-nav-button" type="button" data-view-target="machine-learning">
+          Machine Learning
+        </button>
+        <button class="workspace-nav-button" type="button" data-view-target="intelligence">
+          Agent & AI
+        </button>
+      </div>
+    </nav>
+
+<main class="app-shell">
+      <div id="overviewView" class="app-view" data-view-mount="overview"></div>
+      <div
+        id="analysisView"
+        class="app-view"
+        data-view-mount="analysis"
+        hidden
+      ></div>
+      <div
+        id="machineLearningView"
+        class="app-view"
+        data-view-mount="machine-learning"
+        hidden
+      ></div>
+      <div
+        id="intelligenceView"
+        class="app-view"
+        data-view-mount="intelligence"
+        hidden
+      ></div>
+    </main>
+
+    <div
+      id="toastRegion"
+      class="toast-region"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+</body>
+</html>

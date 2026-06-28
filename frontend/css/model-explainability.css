@@ -1,0 +1,86 @@
+.model-explainability-v2-section {
+  margin-top: 1.5rem;
+}
+
+.explainability-control-grid {
+  grid-template-columns: 0.8fr 1.2fr;
+}
+
+.explainability-chart-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.explainability-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.explainability-form label {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.explainability-form select,
+.explainability-form input[type="number"],
+.explainability-form input[type="text"] {
+  width: 100%;
+  padding: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  color: var(--text);
+  background: #ffffff;
+  font: inherit;
+}
+
+.explainability-checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.explainability-chart {
+  width: 100%;
+  min-height: 400px;
+}
+
+.explainability-chart.large {
+  min-height: 520px;
+}
+
+.explainability-error-panel {
+  margin-top: 1rem;
+}
+
+.explainability-error-panel code {
+  display: block;
+  max-width: 30rem;
+  overflow: hidden;
+  color: #dbeafe;
+  background: #0f172a;
+  padding: 0.45rem;
+  border-radius: 0.45rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 950px) {
+  .explainability-control-grid,
+  .explainability-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .explainability-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .explainability-chart,
+  .explainability-chart.large {
+    min-height: 340px;
+  }
+}

@@ -1,0 +1,245 @@
+<section class="workspace-grid profile-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Schema</span>
+              <h3>Schema Overview</h3>
+            </div>
+          </div>
+
+          <div id="schemaSummary" class="schema-summary">
+            <p class="empty-state">Select a dataset to inspect schema summary.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Columns</span>
+              <h3>Column Profiles</h3>
+            </div>
+          </div>
+
+          <div id="columnProfiles" class="column-profile-list">
+            <p class="empty-state">Select a dataset to inspect column profiles.</p>
+          </div>
+        </article>
+      </section>
+
+<section class="eda-section">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">EDA</span>
+            <h3>Exploratory Data Analysis</h3>
+          </div>
+        </div>
+
+        <div id="edaQualitySummary" class="quality-summary">
+          <p class="empty-state">Select a dataset to run EDA summary.</p>
+        </div>
+
+        <section class="workspace-grid eda-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Missing</span>
+                <h3>Missing Values</h3>
+              </div>
+            </div>
+            <div id="missingAnalysisTable" class="table-wrapper">
+              <p class="empty-state">No missing value analysis yet.</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Statistics</span>
+                <h3>Numeric Statistics</h3>
+              </div>
+            </div>
+            <div id="numericStatisticsTable" class="table-wrapper">
+              <p class="empty-state">No numeric statistics yet.</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="workspace-grid eda-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Outliers</span>
+                <h3>IQR Outlier Analysis</h3>
+              </div>
+            </div>
+            <div id="outlierAnalysisTable" class="table-wrapper">
+              <p class="empty-state">No outlier analysis yet.</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Correlation</span>
+                <h3>Strongest Correlations</h3>
+              </div>
+            </div>
+            <div id="correlationAnalysisTable" class="table-wrapper">
+              <p class="empty-state">No correlation analysis yet.</p>
+            </div>
+          </article>
+        </section>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-tag">Recommendations</span>
+              <h3>EDA Recommendations</h3>
+            </div>
+          </div>
+
+          <div id="edaRecommendations" class="recommendation-list">
+            <p class="empty-state">No recommendations yet.</p>
+          </div>
+        </article>
+      </section>
+
+<section class="visualization-v2-section">
+  <div class="panel-header section-header">
+    <div>
+      <span class="panel-tag">Visualization v2</span>
+      <h3>Visualization Lab</h3>
+    </div>
+
+    <button
+      id="refreshVisualizationLabButton"
+      class="secondary-button"
+      type="button"
+    >
+      Refresh Dashboard
+    </button>
+  </div>
+
+  <div
+    id="visualizationLabSummary"
+    class="visualization-summary-grid"
+  >
+    <p class="empty-state">
+      Select a dataset to generate analytical visualizations.
+    </p>
+  </div>
+
+  <div
+    id="visualizationLabWarnings"
+    class="visualization-warning-list"
+  ></div>
+
+  <section class="workspace-grid visualization-builder-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Builder</span>
+          <h3>Custom Chart Builder</h3>
+        </div>
+      </div>
+
+      <div class="visualization-builder-form">
+        <label for="visualizationTargetSelect">
+          Target Column
+        </label>
+        <select id="visualizationTargetSelect">
+          <option value="">Auto Detect</option>
+        </select>
+
+        <label for="visualizationChartTypeSelect">
+          Chart Type
+        </label>
+        <select id="visualizationChartTypeSelect">
+          <option value="histogram">Histogram</option>
+          <option value="boxplot">Boxplot</option>
+          <option value="category_bar">
+            Category Bar
+          </option>
+          <option value="scatter">Scatter Plot</option>
+          <option value="line">Time Trend</option>
+          <option value="correlation_heatmap">
+            Correlation Heatmap
+          </option>
+          <option value="feature_target">
+            Feature vs Target
+          </option>
+        </select>
+
+        <label for="visualizationXColumnSelect">
+          X / Primary Column
+        </label>
+        <select id="visualizationXColumnSelect">
+          <option value="">Select Column</option>
+        </select>
+
+        <label for="visualizationYColumnSelect">
+          Y / Secondary Column
+        </label>
+        <select id="visualizationYColumnSelect">
+          <option value="">Optional</option>
+        </select>
+
+        <label for="visualizationGroupColumnSelect">
+          Group Column
+        </label>
+        <select id="visualizationGroupColumnSelect">
+          <option value="">Optional</option>
+        </select>
+
+        <button
+          id="buildVisualizationChartButton"
+          class="primary-button"
+          type="button"
+        >
+          Build Custom Chart
+        </button>
+      </div>
+    </article>
+
+    <article class="panel custom-chart-panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Custom Preview</span>
+          <h3>Custom Visualization</h3>
+        </div>
+      </div>
+
+      <div
+        id="customVisualizationMeta"
+        class="custom-visualization-meta"
+      >
+        <p class="empty-state">
+          Build a custom chart to preview it here.
+        </p>
+      </div>
+
+      <div
+        id="customVisualizationChart"
+        class="echart-custom-canvas"
+      ></div>
+    </article>
+  </section>
+
+  <article class="panel visualization-dashboard-panel">
+    <div class="panel-header">
+      <div>
+        <span class="panel-tag">Auto Analysis</span>
+        <h3>Analytical Dashboard</h3>
+      </div>
+    </div>
+
+    <div
+      id="visualizationChartGrid"
+      class="echart-grid"
+    >
+      <p class="empty-state">
+        No visualization dashboard generated yet.
+      </p>
+    </div>
+  </article>
+</section>

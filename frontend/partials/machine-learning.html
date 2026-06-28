@@ -1,0 +1,736 @@
+<section class="ml-workbench-v2-section">
+  <div class="panel-header section-header">
+    <div>
+      <span class="panel-tag">ML Workbench v2</span>
+      <h3>Machine Learning Experiment Lab</h3>
+    </div>
+
+    <button
+      id="refreshMlExperimentsButton"
+      class="secondary-button"
+      type="button"
+    >
+      Refresh Experiments
+    </button>
+  </div>
+
+  <section class="workspace-grid ml-workbench-control-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Configuration</span>
+          <h3>Experiment Setup</h3>
+        </div>
+      </div>
+
+      <div class="ml-workbench-form">
+        <label for="mlTaskTypeSelect">
+          Task Type
+        </label>
+        <select id="mlTaskTypeSelect">
+          <option value="auto">Auto Detect</option>
+          <option value="binary_classification">
+            Binary Classification
+          </option>
+          <option value="multiclass_classification">
+            Multiclass Classification
+          </option>
+          <option value="regression">
+            Regression
+          </option>
+          <option value="clustering">
+            Clustering
+          </option>
+          <option value="anomaly_detection">
+            Anomaly Detection
+          </option>
+        </select>
+
+        <label for="targetColumnSelect">
+          Target Column
+        </label>
+        <select id="targetColumnSelect">
+          <option value="">Auto Detect</option>
+        </select>
+
+        <label for="mlFeatureSelect">
+          Feature Columns
+        </label>
+        <select
+          id="mlFeatureSelect"
+          multiple
+          size="8"
+        ></select>
+
+        <p class="helper-text">
+          Leave all features unselected to use the
+          recommended feature set.
+        </p>
+
+        <div class="ml-workbench-checkbox-grid">
+          <label class="checkbox-row">
+            <input
+              id="mlIncludeDatetimeCheckbox"
+              type="checkbox"
+              checked
+            />
+            Include datetime features
+          </label>
+
+          <label class="checkbox-row">
+            <input
+              id="mlIncludeTextCheckbox"
+              type="checkbox"
+            />
+            Include TF-IDF text features
+          </label>
+        </div>
+
+        <label for="mlScalerSelect">
+          Numeric Scaler
+        </label>
+        <select id="mlScalerSelect">
+          <option value="standard">
+            Standard Scaler
+          </option>
+          <option value="robust">
+            Robust Scaler
+          </option>
+          <option value="minmax">
+            Min-Max Scaler
+          </option>
+          <option value="none">
+            No Scaling
+          </option>
+        </select>
+
+        <label for="mlCvFoldsInput">
+          Cross-validation Folds
+        </label>
+        <input
+          id="mlCvFoldsInput"
+          type="number"
+          min="2"
+          max="10"
+          value="5"
+        />
+
+        <label for="mlClassWeightSelect">
+          Class Weight
+        </label>
+        <select id="mlClassWeightSelect">
+          <option value="auto">Auto</option>
+          <option value="balanced">Balanced</option>
+          <option value="none">None</option>
+        </select>
+
+        <div id="mlUnsupervisedOptions">
+          <label for="mlClusterCountInput">
+            KMeans Clusters
+          </label>
+          <input
+            id="mlClusterCountInput"
+            type="number"
+            min="2"
+            max="30"
+            value="3"
+          />
+
+          <label for="mlContaminationInput">
+            Anomaly Contamination
+          </label>
+          <input
+            id="mlContaminationInput"
+            type="number"
+            min="0.01"
+            max="0.5"
+            step="0.01"
+            value="0.05"
+          />
+        </div>
+
+        <div class="ml-workbench-action-row">
+          <button
+            id="generateMlPlanButton"
+            class="secondary-button"
+            type="button"
+          >
+            Generate Plan
+          </button>
+
+          <button
+            id="runMlExperimentButton"
+            class="primary-button"
+            type="button"
+          >
+            Run Experiment
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="mlWorkbenchStatus"
+        class="training-status"
+      >
+        <p class="empty-state">
+          Select a dataset to prepare an ML experiment.
+        </p>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Plan</span>
+          <h3>Pipeline Plan</h3>
+        </div>
+      </div>
+
+      <div id="mlPlanSummary">
+        <p class="empty-state">
+          Generate a plan to inspect task detection.
+        </p>
+      </div>
+
+      <div
+        id="mlPlanWarnings"
+        class="ml-warning-list"
+      ></div>
+
+      <div
+        id="mlPipelineSteps"
+        class="ml-pipeline-step-list"
+      ></div>
+
+      <div class="panel-header nested-header">
+        <div>
+          <span class="panel-tag">Models</span>
+          <h3>Model Options</h3>
+        </div>
+      </div>
+
+      <div
+        id="mlModelOptions"
+        class="ml-model-option-grid"
+      >
+        <p class="empty-state">
+          No model options loaded yet.
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <section class="workspace-grid ml-workbench-result-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Results</span>
+          <h3>Experiment Leaderboard</h3>
+        </div>
+      </div>
+
+      <div
+        id="mlExperimentLeaderboard"
+        class="table-wrapper"
+      >
+        <p class="empty-state">
+          No ML Workbench experiment yet.
+        </p>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Metrics</span>
+          <h3>Metric Comparison</h3>
+        </div>
+      </div>
+
+      <div
+        id="mlMetricComparisonChart"
+        class="ml-workbench-chart"
+      ></div>
+    </article>
+  </section>
+
+  <section class="workspace-grid ml-workbench-result-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Projection</span>
+          <h3>Cluster / Anomaly Projection</h3>
+        </div>
+      </div>
+
+      <div
+        id="mlProjectionChart"
+        class="ml-workbench-chart"
+      ></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Saved Models</span>
+          <h3>Model Registry</h3>
+        </div>
+      </div>
+
+      <div
+        id="modelLeaderboard"
+        class="table-wrapper"
+      >
+        <p class="empty-state">
+          No saved supervised models yet.
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <section class="workspace-grid ml-workbench-result-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Lifecycle</span>
+          <h3>Model Lifecycle</h3>
+        </div>
+      </div>
+
+      <button id="promoteModelButton" class="primary-button" type="button">
+        Promote Selected Model
+      </button>
+
+      <button id="checkModelMigrationButton" class="secondary-button" type="button">
+        Migration Check
+      </button>
+
+      <label for="challengerModelIdInput">Challenger Model ID</label>
+      <input
+        id="challengerModelIdInput"
+        type="text"
+        placeholder="Paste challenger model ID"
+      />
+
+      <button id="promoteChallengerButton" class="secondary-button" type="button">
+        Promote Challenger
+      </button>
+
+      <pre id="modelLifecycleOutput" class="code-output small-output">Select a saved model.</pre>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Diagnostics</span>
+          <h3>Threshold / Segment / What-if</h3>
+        </div>
+      </div>
+
+      <label for="segmentColumnInput">Segment Column</label>
+      <input
+        id="segmentColumnInput"
+        type="text"
+        placeholder="Example: contract_type"
+      />
+
+      <button id="runThresholdAnalysisButton" class="secondary-button" type="button">
+        Threshold Analysis
+      </button>
+
+      <button id="runSegmentMetricsButton" class="secondary-button" type="button">
+        Segment Metrics
+      </button>
+
+      <button id="runWhatIfButton" class="secondary-button" type="button">
+        What-if Sample
+      </button>
+
+      <pre id="modelAdvancedDiagnosticsOutput" class="code-output small-output">No advanced diagnostic run yet.</pre>
+    </article>
+  </section>
+
+  <article class="panel ml-experiment-history-panel">
+    <div class="panel-header">
+      <div>
+        <span class="panel-tag">History</span>
+        <h3>Experiment History</h3>
+      </div>
+    </div>
+
+    <div
+      id="mlExperimentHistory"
+      class="dataset-list"
+    >
+      <p class="empty-state">
+        No Workbench experiments yet.
+      </p>
+    </div>
+  </article>
+</section>
+
+<section class="model-evaluation-section">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">Evaluation</span>
+            <h3>Model Evaluation Dashboard</h3>
+          </div>
+        </div>
+
+        <section class="workspace-grid model-evaluation-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Diagnostics</span>
+                <h3>Model Diagnostics</h3>
+              </div>
+            </div>
+
+            <div id="modelDiagnosticsPanel" class="table-wrapper">
+              <p class="empty-state">Train or select a model to view diagnostics.</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Importance</span>
+                <h3>Feature Importance</h3>
+              </div>
+            </div>
+
+            <div id="featureImportancePanel" class="table-wrapper">
+              <p class="empty-state">Train or select a model to view feature importance.</p>
+            </div>
+          </article>
+        </section>
+      </section>
+
+<section class="model-explainability-v2-section">
+  <div class="panel-header section-header">
+    <div>
+      <span class="panel-tag">Explainability v2</span>
+      <h3>Model Explainability Workspace</h3>
+    </div>
+  </div>
+
+  <section class="workspace-grid explainability-control-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Configuration</span>
+          <h3>Explain Model</h3>
+        </div>
+      </div>
+
+      <div class="explainability-form">
+        <label for="explainabilityModelSelect">
+          Model
+        </label>
+        <select id="explainabilityModelSelect">
+          <option value="">
+            Train a supervised model first
+          </option>
+        </select>
+
+        <label for="explainabilitySampleSizeInput">
+          SHAP Sample Rows
+        </label>
+        <input
+          id="explainabilitySampleSizeInput"
+          type="number"
+          min="10"
+          max="200"
+          value="100"
+        />
+
+        <label for="explainabilityBackgroundSizeInput">
+          SHAP Background Rows
+        </label>
+        <input
+          id="explainabilityBackgroundSizeInput"
+          type="number"
+          min="10"
+          max="100"
+          value="50"
+        />
+
+        <label for="explainabilityPermutationRepeatsInput">
+          Permutation Repeats
+        </label>
+        <input
+          id="explainabilityPermutationRepeatsInput"
+          type="number"
+          min="3"
+          max="20"
+          value="8"
+        />
+
+        <label for="explainabilityLocalRowInput">
+          Local Holdout Row Position
+        </label>
+        <input
+          id="explainabilityLocalRowInput"
+          type="number"
+          min="0"
+          value="0"
+        />
+
+        <label for="explainabilityPositiveClassInput">
+          Positive Class
+        </label>
+        <input
+          id="explainabilityPositiveClassInput"
+          type="text"
+          placeholder="Optional; defaults to last class"
+        />
+
+        <div class="explainability-checkbox-grid">
+          <label class="checkbox-row">
+            <input
+              id="includePermutationCheckbox"
+              type="checkbox"
+              checked
+            />
+            Permutation importance
+          </label>
+
+          <label class="checkbox-row">
+            <input
+              id="includeShapCheckbox"
+              type="checkbox"
+              checked
+            />
+            SHAP explanation
+          </label>
+        </div>
+
+        <button
+          id="runExplainabilityButton"
+          class="primary-button"
+          type="button"
+        >
+          Analyze Model
+        </button>
+
+        <button
+          id="generateExplainabilityInsightButton"
+          class="secondary-button"
+          type="button"
+        >
+          Generate LLM Interpretation
+        </button>
+      </div>
+
+      <div
+        id="explainabilityStatus"
+        class="training-status"
+      >
+        <p class="empty-state">
+          Select a saved model to begin.
+        </p>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Overview</span>
+          <h3>Explainability Summary</h3>
+        </div>
+      </div>
+
+      <div id="explainabilityOverview">
+        <p class="empty-state">
+          No explainability result yet.
+        </p>
+      </div>
+
+      <div
+        id="explainabilityWarnings"
+        class="ml-warning-list"
+      ></div>
+
+      <div class="panel-header nested-header">
+        <div>
+          <span class="panel-tag">AI</span>
+          <h3>LLM Interpretation</h3>
+        </div>
+      </div>
+
+      <div id="explainabilityInsightOutput">
+        <p class="empty-state">
+          Generate an interpretation after analysis.
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <section class="workspace-grid explainability-chart-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">ROC</span>
+          <h3>ROC / Predicted vs Actual</h3>
+        </div>
+      </div>
+
+      <div
+        id="explainabilityPrimaryCurveChart"
+        class="explainability-chart"
+      ></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">PR / Residual</span>
+          <h3>Precision-Recall / Residual Plot</h3>
+        </div>
+      </div>
+
+      <div
+        id="explainabilitySecondaryCurveChart"
+        class="explainability-chart"
+      ></div>
+    </article>
+  </section>
+
+  <section class="workspace-grid explainability-chart-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Permutation</span>
+          <h3>Raw Feature Importance</h3>
+        </div>
+      </div>
+
+      <div
+        id="explainabilityPermutationChart"
+        class="explainability-chart"
+      ></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">SHAP</span>
+          <h3>Global SHAP Importance</h3>
+        </div>
+      </div>
+
+      <div
+        id="explainabilityShapImportanceChart"
+        class="explainability-chart"
+      ></div>
+    </article>
+  </section>
+
+  <section class="workspace-grid explainability-chart-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">SHAP Summary</span>
+          <h3>SHAP Beeswarm</h3>
+        </div>
+      </div>
+
+      <div
+        id="explainabilityShapBeeswarmChart"
+        class="explainability-chart large"
+      ></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Local SHAP</span>
+          <h3>Prediction Waterfall</h3>
+        </div>
+      </div>
+
+      <div
+        id="explainabilityLocalChart"
+        class="explainability-chart large"
+      ></div>
+    </article>
+  </section>
+
+  <article class="panel explainability-error-panel">
+    <div class="panel-header">
+      <div>
+        <span class="panel-tag">Errors</span>
+        <h3>Error Sample Explorer</h3>
+      </div>
+    </div>
+
+    <div
+      id="explainabilityErrorSamples"
+      class="table-wrapper"
+    >
+      <p class="empty-state">
+        No error samples available.
+      </p>
+    </div>
+  </article>
+</section>
+
+<section class="prediction-section">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">Prediction</span>
+            <h3>Prediction Lab</h3>
+          </div>
+        </div>
+
+        <section class="workspace-grid prediction-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Input</span>
+                <h3>Single Record Prediction</h3>
+              </div>
+            </div>
+
+            <div class="ml-form">
+              <label for="predictionModelSelect">Prediction Model</label>
+              <select id="predictionModelSelect">
+                <option value="">Train a model first</option>
+              </select>
+
+              <label for="predictionJsonInput">Input JSON</label>
+              <textarea id="predictionJsonInput" rows="10" spellcheck="false"></textarea>
+
+              <button id="runPredictionButton" class="primary-button" type="button">
+                Run Prediction
+              </button>
+            </div>
+
+            <pre id="predictionStatus" class="code-output small-output">Waiting for prediction...</pre>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Batch</span>
+                <h3>Batch CSV Prediction</h3>
+              </div>
+            </div>
+
+            <div class="upload-box">
+              <input id="predictionCsvInput" type="file" accept=".csv,text/csv" />
+              <button id="runBatchPredictionButton" class="primary-button" type="button">
+                Run Batch Prediction
+              </button>
+            </div>
+
+            <p class="helper-text">
+              The CSV must include the trained model's feature columns.
+            </p>
+
+            <div id="predictionResultsTable" class="table-wrapper">
+              <p class="empty-state">No prediction results yet.</p>
+            </div>
+          </article>
+        </section>
+      </section>

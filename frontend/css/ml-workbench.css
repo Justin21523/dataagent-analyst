@@ -1,0 +1,185 @@
+.ml-workbench-v2-section {
+  margin-top: 1.5rem;
+}
+
+.ml-workbench-control-grid {
+  grid-template-columns: 0.85fr 1.15fr;
+}
+
+.ml-workbench-result-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.ml-workbench-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.ml-workbench-form label {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.ml-workbench-form select,
+.ml-workbench-form input[type="number"] {
+  width: 100%;
+  padding: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  color: var(--text);
+  background: #ffffff;
+  font: inherit;
+}
+
+#mlFeatureSelect {
+  min-height: 12rem;
+}
+
+.ml-workbench-checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+#mlUnsupervisedOptions {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: var(--surface-soft);
+}
+
+.ml-workbench-action-row {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.6rem;
+}
+
+.ml-workbench-action-row button {
+  flex: 1;
+}
+
+.ml-warning-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.ml-warning-card {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #fde68a;
+  border-radius: 0.8rem;
+  color: #92400e;
+  background: #fffbeb;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ml-pipeline-step-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.ml-pipeline-step-card {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  gap: 0.8rem;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+.ml-pipeline-step-card > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--primary);
+  font-weight: 800;
+}
+
+.ml-pipeline-step-card h4 {
+  margin: 0;
+}
+
+.ml-pipeline-step-card p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.ml-model-option-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+  gap: 0.65rem;
+}
+
+.ml-model-option-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.ml-model-option-card:has(input:checked) {
+  border-color: #a5b4fc;
+  background: #eef2ff;
+}
+
+.ml-model-option-card input {
+  margin-top: 0.2rem;
+}
+
+.ml-model-option-card strong,
+.ml-model-option-card small {
+  display: block;
+}
+
+.ml-model-option-card small {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.ml-workbench-chart {
+  width: 100%;
+  min-height: 390px;
+}
+
+.ml-experiment-history-panel {
+  margin-top: 1rem;
+}
+
+@media (max-width: 950px) {
+  .ml-workbench-control-grid,
+  .ml-workbench-result-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .ml-workbench-checkbox-grid,
+  .ml-model-option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-workbench-action-row {
+    flex-direction: column;
+  }
+}
