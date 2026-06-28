@@ -6,6 +6,10 @@ from typing import Any
 from uuid import uuid4
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.bundle_schema import (
     BundleExportRequest,
     BundleExportResponse,
@@ -24,16 +28,20 @@ class BundleService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.dataset_service = DatasetService(settings)
+        self.metadata_repository = create_metadata_repository(settings)
 
     def export_bundle(self, request: BundleExportRequest) -> BundleExportResponse:
         self.dataset_service.get_dataset_detail(request.dataset_id)
-        dataset_record = self.dataset_service._find_dataset_record(request.dataset_id)
+        dataset_record = self._find_record(
+            registry_name="datasets",
+            key="datasets",
+            id_field="id",
+            record_id=request.dataset_id,
+        )
         versions = self.dataset_service.list_dataset_versions(request.dataset_id).versions
         models = (
             self._filter_records(
-                self._load_json(
-                    self.settings.processed_data_dir / self.settings.model_registry_filename
-                ),
+                self._load_registry("models"),
                 "models",
                 request.dataset_id,
             )
@@ -42,9 +50,7 @@ class BundleService:
         )
         reports = (
             self._filter_records(
-                self._load_json(
-                    self.settings.processed_data_dir / self.settings.report_registry_filename
-                ),
+                self._load_registry("reports"),
                 "reports",
                 request.dataset_id,
             )
@@ -53,9 +59,7 @@ class BundleService:
         )
         drift_reports = (
             self._filter_records(
-                self._load_json(
-                    self.settings.processed_data_dir / self.settings.drift_report_registry_filename
-                ),
+                self._load_registry("drift_reports"),
                 "reports",
                 request.dataset_id,
             )
@@ -144,11 +148,7 @@ class BundleService:
             dataset_record["created_at"] = datetime.now(UTC).isoformat()
             dataset_record["updated_at"] = dataset_record["created_at"]
 
-            self._append_records(
-                self.settings.processed_data_dir / self.settings.dataset_registry_filename,
-                "datasets",
-                [dataset_record],
-            )
+            self._append_records("datasets", "datasets", [dataset_record])
 
             version_records = []
 
@@ -161,11 +161,7 @@ class BundleService:
                 )
                 version_records.append(version_record)
 
-            self._append_records(
-                self.settings.processed_data_dir / self.settings.dataset_version_registry_filename,
-                "versions",
-                version_records,
-            )
+            self._append_records("dataset_versions", "versions", version_records)
 
             model_records = []
 
@@ -186,11 +182,7 @@ class BundleService:
                 model_record["lifecycle_status"] = "candidate"
                 model_records.append(model_record)
 
-            self._append_records(
-                self.settings.processed_data_dir / self.settings.model_registry_filename,
-                "models",
-                model_records,
-            )
+            self._append_records("models", "models", model_records)
 
         return BundleImportResponse(
             bundle_id=import_id,
@@ -213,29 +205,38 @@ class BundleService:
             record for record in registry.get(key, []) if record.get("dataset_id") == dataset_id
         ]
 
-    def _load_json(self, path: Path) -> dict[str, list[dict[str, Any]]]:
-        if not path.exists():
-            return {}
-
-        with path.open("r", encoding="utf-8") as file:
-            return json.load(file)
+    def _load_registry(self, registry_name: str) -> dict[str, list[dict[str, Any]]]:
+        try:
+            return self.metadata_repository.load_registry(registry_name)
+        except MetadataRepositoryError as exc:
+            raise BundleServiceError(f"Bundle metadata registry failed: {registry_name}") from exc
 
     def _append_records(
         self,
-        path: Path,
+        registry_name: str,
         key: str,
         records: list[dict[str, Any]],
     ) -> None:
-        registry = self._load_json(path) or {key: []}
+        registry = self._load_registry(registry_name)
         registry.setdefault(key, [])
         registry[key].extend(records)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = path.with_suffix(".tmp")
+        try:
+            self.metadata_repository.save_registry(registry_name, registry)
+        except MetadataRepositoryError as exc:
+            raise BundleServiceError(f"Bundle metadata registry failed: {registry_name}") from exc
 
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(path)
+    def _find_record(
+        self,
+        registry_name: str,
+        key: str,
+        id_field: str,
+        record_id: str,
+    ) -> dict[str, Any]:
+        registry = self._load_registry(registry_name)
+        for record in registry.get(key, []):
+            if record.get(id_field) == record_id:
+                return record
+        raise BundleServiceError(f"Bundle metadata record not found: {record_id}")
 
     def _write_artifact(
         self,

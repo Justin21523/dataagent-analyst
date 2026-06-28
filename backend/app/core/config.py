@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -21,7 +22,9 @@ class Settings(BaseSettings):
     report_registry_filename: str = "reports_registry.json"
     agent_run_registry_filename: str = "agent_runs_registry.json"
     agent_job_registry_filename: str = "agent_jobs_registry.json"
+    backtest_job_registry_filename: str = "backtest_jobs_registry.json"
     drift_report_registry_filename: str = "drift_reports_registry.json"
+    workspace_state_registry_filename: str = "workspace_states_registry.json"
     llm_enabled: bool = False
     llm_base_url: str = "http://127.0.0.1:8080"
     llm_model: str = "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
@@ -30,6 +33,7 @@ class Settings(BaseSettings):
     llm_max_tokens: int = 700
 
     database_url: str = "postgresql://dataagent:dataagent_dev_password@127.0.0.1:5432/dataagent"
+    metadata_backend: Literal["json", "postgres"] = "json"
     qdrant_url: str = "http://127.0.0.1:6333"
     qdrant_api_key: str | None = None
     infrastructure_checks_enabled: bool = False
@@ -55,6 +59,7 @@ class Settings(BaseSettings):
     models_dir: Path = data_dir / "models"
     vector_store_dir: Path = data_dir / "vector_store"
     bundles_dir: Path = data_dir / "bundles"
+    backtests_dir: Path = data_dir / "backtests"
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -72,6 +77,7 @@ def ensure_runtime_directories(settings: Settings) -> None:
         settings.models_dir,
         settings.vector_store_dir,
         settings.bundles_dir,
+        settings.backtests_dir,
     ]
 
     for directory in runtime_directories:

@@ -216,6 +216,18 @@ async function generatePlan() {
       elements.target.value = plan.target_column;
     }
 
+    window.dispatchEvent(
+      new CustomEvent(
+        "dataagent:ml-plan-ready",
+        {
+          detail: {
+            datasetId: currentDatasetId,
+            targetColumn: plan.target_column || elements.target.value || null,
+          },
+        },
+      ),
+    );
+
     renderMlWorkbenchStatus(
       elements.status,
       {
@@ -333,6 +345,7 @@ async function runExperiment() {
             bestModelId: (
               experiment.best_model_id
             ),
+            targetColumn: experiment.target_column || elements.target.value || null,
           },
         },
       ),

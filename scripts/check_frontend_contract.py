@@ -18,6 +18,12 @@ def collect_required_ids() -> set[str]:
                 source,
             )
         )
+        required_ids.update(
+            re.findall(
+                r':\s*["\']#([A-Za-z][A-Za-z0-9_-]+)["\']',
+                source,
+            )
+        )
 
     return required_ids
 

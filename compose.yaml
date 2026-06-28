@@ -79,6 +79,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-10}
       UVICORN_WORKERS: ${UVICORN_WORKERS:-1}
+      METADATA_BACKEND: ${METADATA_BACKEND:-postgres}
 
       DATABASE_URL: >-
         postgresql://${POSTGRES_USER:-dataagent}:${POSTGRES_PASSWORD:-dataagent_dev_password}@postgres:5432/${POSTGRES_DB:-dataagent}

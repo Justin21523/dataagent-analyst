@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 import numpy as np
@@ -204,10 +205,24 @@ class ColumnProfilerService:
         if pd_types.is_numeric_dtype(series):
             return False
 
-        converted = pd.to_datetime(series, errors="coerce")
+        sample = series.dropna().astype(str).str.strip().head(100)
+
+        if sample.empty:
+            return False
+
+        if not sample.map(self._looks_like_datetime_value).any():
+            return False
+
+        converted = pd.to_datetime(sample, errors="coerce", format="mixed")
         success_ratio = converted.notna().mean()
 
         return bool(success_ratio >= 0.8)
+
+    def _looks_like_datetime_value(self, value: str) -> bool:
+        return bool(
+            re.search(r"\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b", value)
+            or re.search(r"\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b", value)
+        )
 
     def _get_sample_values(self, series: pd.Series) -> list[Any]:
         # 取少量非空樣本，讓前端欄位卡片快速展示資料長相。
@@ -264,7 +279,7 @@ class ColumnProfilerService:
         if inferred_type != "datetime":
             return None
 
-        datetime_series = pd.to_datetime(series, errors="coerce").dropna()
+        datetime_series = pd.to_datetime(series, errors="coerce", format="mixed").dropna()
 
         if datetime_series.empty:
             return None

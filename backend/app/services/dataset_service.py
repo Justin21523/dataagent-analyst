@@ -10,6 +10,10 @@ import numpy as np
 import pandas as pd
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.dataset_schema import (
     DatasetDetail,
     DatasetPreviewResponse,
@@ -37,10 +41,7 @@ class DatasetNotFoundError(DatasetServiceError):
 class DatasetService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.dataset_registry_filename
-        self.version_registry_path = (
-            settings.processed_data_dir / settings.dataset_version_registry_filename
-        )
+        self.metadata_repository = create_metadata_repository(settings)
 
     def create_dataset(self, original_filename: str, file_content: bytes) -> DatasetDetail:
         # 上傳入口集中在 service，route 只負責 HTTP request / response。
@@ -583,54 +584,28 @@ class DatasetService:
         return json.loads(json_text)
 
     def _load_registry(self) -> dict[str, list[dict[str, Any]]]:
-        # Registry 檔不存在時回傳空列表，讓第一次啟動可以直接使用。
-        if not self.registry_path.exists():
-            return {"datasets": []}
-
         try:
-            with self.registry_path.open("r", encoding="utf-8") as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("datasets")
+        except MetadataRepositoryError as exc:
             raise DatasetValidationError("Dataset registry file is corrupted.") from exc
 
-        if "datasets" not in registry or not isinstance(registry["datasets"], list):
-            raise DatasetValidationError("Dataset registry format is invalid.")
-
-        return registry
-
     def _save_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        # 先寫入 temporary file，再 replace，降低寫入中斷造成 registry 壞掉的機率。
-        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("datasets", registry)
+        except MetadataRepositoryError as exc:
+            raise DatasetValidationError("Dataset registry format is invalid.") from exc
 
     def _load_version_registry(self) -> dict[str, list[dict[str, Any]]]:
-        if not self.version_registry_path.exists():
-            return {"versions": []}
-
         try:
-            with self.version_registry_path.open("r", encoding="utf-8") as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("dataset_versions")
+        except MetadataRepositoryError as exc:
             raise DatasetValidationError("Dataset version registry file is corrupted.") from exc
 
-        if "versions" not in registry or not isinstance(registry["versions"], list):
-            raise DatasetValidationError("Dataset version registry format is invalid.")
-
-        return registry
-
     def _save_version_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        self.version_registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.version_registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.version_registry_path)
+        try:
+            self.metadata_repository.save_registry("dataset_versions", registry)
+        except MetadataRepositoryError as exc:
+            raise DatasetValidationError("Dataset version registry format is invalid.") from exc
 
     def _find_dataset_record(self, dataset_id: str) -> dict[str, Any]:
         registry = self._load_registry()

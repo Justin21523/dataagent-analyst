@@ -1,10 +1,13 @@
-import json
 from datetime import UTC, datetime
 from threading import Lock
 from typing import Any
 from uuid import uuid4
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.agent_job_schema import AgentJobDetail, AgentJobEvent, AgentJobSummary
 from backend.app.schemas.agent_schema import AgentRunRequest, AgentRunResponse
 
@@ -22,7 +25,7 @@ class AgentJobNotFoundError(AgentJobRegistryError):
 class AgentJobRegistryService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.agent_job_registry_filename
+        self.metadata_repository = create_metadata_repository(settings)
 
     def create_job(
         self,
@@ -231,28 +234,16 @@ class AgentJobRegistryService:
         )
 
     def _load_registry(self) -> dict[str, list[dict[str, Any]]]:
-        if not self.registry_path.exists():
-            return {"jobs": []}
-
         try:
-            with self.registry_path.open("r", encoding="utf-8") as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("agent_jobs")
+        except MetadataRepositoryError as exc:
             raise AgentJobRegistryError("Agent job registry file is corrupted.") from exc
 
-        if "jobs" not in registry or not isinstance(registry["jobs"], list):
-            raise AgentJobRegistryError("Agent job registry format is invalid.")
-
-        return registry
-
     def _save_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("agent_jobs", registry)
+        except MetadataRepositoryError as exc:
+            raise AgentJobRegistryError("Agent job registry format is invalid.") from exc
 
     def _find_job_record_from_registry(
         self,

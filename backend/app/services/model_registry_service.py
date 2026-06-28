@@ -1,7 +1,10 @@
-import json
 from typing import Any
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.ml_schema import MLModelResult
 
 
@@ -16,7 +19,7 @@ class ModelNotFoundError(ModelRegistryError):
 class ModelRegistryService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.model_registry_filename
+        self.metadata_repository = create_metadata_repository(settings)
 
     def add_model_record(self, record: dict[str, Any]) -> MLModelResult:
         # 模型註冊表集中管理，避免訓練 service 和 API route 直接操作 JSON 檔。
@@ -112,27 +115,13 @@ class ModelRegistryService:
         return MLModelResult.model_validate(selected_record)
 
     def _load_registry(self) -> dict[str, list[dict[str, Any]]]:
-        # Registry 不存在時回傳空列表，讓第一次訓練可以直接建立。
-        if not self.registry_path.exists():
-            return {"models": []}
-
         try:
-            with self.registry_path.open("r", encoding="utf-8") as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("models")
+        except MetadataRepositoryError as exc:
             raise ModelRegistryError("Model registry file is corrupted.") from exc
 
-        if "models" not in registry or not isinstance(registry["models"], list):
-            raise ModelRegistryError("Model registry format is invalid.")
-
-        return registry
-
     def _save_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        # 用 temporary file 寫入，降低中途失敗造成 JSON 損壞的機率。
-        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("models", registry)
+        except MetadataRepositoryError as exc:
+            raise ModelRegistryError("Model registry format is invalid.") from exc

@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import Any, cast
 
 import numpy as np
@@ -197,20 +198,27 @@ class VisualizationService:
         datetime_column = datetime_profiles[0].name
         numeric_column = numeric_profiles[0].name
 
-        temporary_dataframe = pd.DataFrame(
-            {
-                "date": pd.to_datetime(dataframe[datetime_column], errors="coerce"),
-                "value": self._to_numeric_series_with_index(dataframe[numeric_column]),
-            }
-        ).dropna()
+        date_values = [
+            self._parse_datetime_value(value) for value in dataframe[datetime_column].tolist()
+        ]
+        numeric_values = self._to_numeric_series_with_index(dataframe[numeric_column]).tolist()
+        grouped_values: dict[str, list[float]] = {}
 
-        if temporary_dataframe.empty:
+        for date_value, numeric_value in zip(date_values, numeric_values, strict=True):
+            if date_value is None or pd.isna(numeric_value):
+                continue
+
+            date_label = date_value.strftime("%Y-%m-%d")
+            grouped_values.setdefault(date_label, []).append(float(numeric_value))
+
+        if not grouped_values:
             return []
 
-        temporary_dataframe = temporary_dataframe.sort_values("date")
-        temporary_dataframe["date_label"] = temporary_dataframe["date"].dt.strftime("%Y-%m-%d")
-
-        grouped_dataframe = temporary_dataframe.groupby("date_label", sort=False)["value"].mean()
+        labels = sorted(grouped_values)
+        values = [
+            self._json_float(sum(grouped_values[label]) / len(grouped_values[label]))
+            for label in labels
+        ]
 
         return [
             ChartRecommendation(
@@ -223,14 +231,11 @@ class VisualizationService:
                 columns=[datetime_column, numeric_column],
                 reason="Datetime trend charts help identify temporal changes in numeric values.",
                 data=ChartData(
-                    labels=grouped_dataframe.index.tolist(),
+                    labels=labels,
                     datasets=[
                         {
                             "label": f"Average {numeric_column}",
-                            "data": [
-                                self._json_float(value)
-                                for value in grouped_dataframe.values.tolist()
-                            ],
+                            "data": values,
                         }
                     ],
                     x_label=datetime_column,
@@ -296,6 +301,30 @@ class VisualizationService:
                 ),
             )
         ]
+
+    def _parse_datetime_value(self, value: Any) -> datetime | None:
+        if pd.isna(value):
+            return None
+
+        normalized = str(value).strip()
+
+        if not normalized:
+            return None
+
+        normalized = normalized.replace("Z", "+00:00")
+
+        try:
+            return datetime.fromisoformat(normalized)
+        except ValueError:
+            pass
+
+        for date_format in ("%Y/%m/%d", "%m/%d/%Y", "%d/%m/%Y"):
+            try:
+                return datetime.strptime(normalized, date_format)
+            except ValueError:
+                continue
+
+        return None
 
     def _build_target_summary_charts(
         self,

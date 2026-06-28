@@ -1,28 +1,41 @@
 import { initNavigation } from "./ui/navigation.js";
+import { initGuideTour } from "./ui/guideTour.js";
 import { bindGlobalToasts, showToast } from "./ui/toast.js";
+import {
+  ensureRouteInitialized,
+  initializeAppShell,
+} from "./app.js";
 
 
-const PARTIALS = [
-  {
+const PARTIALS = {
+  data: {
     mount: "#overviewView",
     path: "./partials/overview.html",
   },
-  {
+  analyze: {
     mount: "#analysisView",
     path: "./partials/analysis.html",
   },
-  {
+  model: {
     mount: "#machineLearningView",
     path: "./partials/machine-learning.html",
   },
-  {
+  intelligence: {
     mount: "#intelligenceView",
     path: "./partials/intelligence.html",
   },
-];
+};
+
+const loadedGroups = new Set();
 
 
-async function loadPartial({ mount, path }) {
+async function loadPartial(group) {
+  if (loadedGroups.has(group)) {
+    return;
+  }
+
+  const partial = PARTIALS[group];
+  const { mount, path } = partial;
   const container = document.querySelector(mount);
 
   if (!container) {
@@ -36,18 +49,22 @@ async function loadPartial({ mount, path }) {
   }
 
   container.innerHTML = await response.text();
+  loadedGroups.add(group);
 }
 
 
 bindGlobalToasts();
 
 try {
-  // 先載入所有 HTML partials，再 import app.js，確保 DOM elements 已存在。
-  await Promise.all(PARTIALS.map(loadPartial));
+  await initializeAppShell();
 
-  initNavigation();
-
-  await import("./app.js");
+  initNavigation({
+    beforeActivate: async (routeDetail) => {
+      await loadPartial(routeDetail.group);
+      await ensureRouteInitialized(routeDetail);
+    },
+  });
+  initGuideTour();
 } catch (error) {
   console.error(error);
 

@@ -100,6 +100,84 @@ print("Infrastructure services are healthy.")
 echo "==> Running existing end-to-end smoke test through Nginx"
 BASE_URL="${FRONTEND_URL}" bash scripts/smoke_test.sh
 
+echo "==> Checking metadata persistence across backend restart"
+dataset_count_before="$(
+  curl -fsS "${FRONTEND_URL}/api/datasets" |
+    "${PYTHON}" -c '
+import json
+import sys
+
+payload = json.load(sys.stdin)
+print(payload["total"])
+'
+)"
+
+if [[ "${dataset_count_before}" -lt 1 ]]; then
+  echo "Expected at least one dataset before backend restart."
+  exit 1
+fi
+
+"${COMPOSE_COMMAND[@]}" restart backend >/dev/null
+
+backend_ready=false
+
+for _ in $(seq 1 90); do
+  if curl -fsS "${FRONTEND_URL}/api/health" >/dev/null 2>&1; then
+    backend_ready=true
+    break
+  fi
+
+  sleep 1
+done
+
+if [[ "${backend_ready}" != "true" ]]; then
+  echo "Backend did not become ready after restart."
+  "${COMPOSE_COMMAND[@]}" ps
+  exit 1
+fi
+
+backend_container="$("${COMPOSE_COMMAND[@]}" ps -q backend)"
+backend_healthy=false
+
+for _ in $(seq 1 90); do
+  backend_health_status="$(
+    docker inspect \
+      --format '{{.State.Health.Status}}' \
+      "${backend_container}" \
+      2>/dev/null || true
+  )"
+
+  if [[ "${backend_health_status}" == "healthy" ]]; then
+    backend_healthy=true
+    break
+  fi
+
+  sleep 1
+done
+
+if [[ "${backend_healthy}" != "true" ]]; then
+  echo "Backend Docker healthcheck did not become healthy after restart."
+  "${COMPOSE_COMMAND[@]}" ps
+  exit 1
+fi
+
+dataset_count_after="$(
+  curl -fsS "${FRONTEND_URL}/api/datasets" |
+    "${PYTHON}" -c '
+import json
+import sys
+
+payload = json.load(sys.stdin)
+print(payload["total"])
+'
+)"
+
+if [[ "${dataset_count_after}" -lt "${dataset_count_before}" ]]; then
+  echo "Dataset metadata count decreased after backend restart."
+  echo "before=${dataset_count_before} after=${dataset_count_after}"
+  exit 1
+fi
+
 echo "==> Docker service status"
 "${COMPOSE_COMMAND[@]}" ps
 

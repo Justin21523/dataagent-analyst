@@ -1,8 +1,11 @@
-import json
 from datetime import UTC, datetime
 from typing import Any
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.agent_schema import AgentRunResponse, AgentRunSummary
 
 
@@ -17,7 +20,7 @@ class AgentRunNotFoundError(AgentRunRegistryError):
 class AgentRunRegistryService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.agent_run_registry_filename
+        self.metadata_repository = create_metadata_repository(settings)
 
     def add_run(self, run: AgentRunResponse) -> AgentRunResponse:
         # Agent run 紀錄使用 JSON 儲存，方便 Phase 11 快速建立任務歷史。
@@ -71,28 +74,16 @@ class AgentRunRegistryService:
         raise AgentRunRegistryError("Agent run timestamp format is invalid.")
 
     def _load_registry(self) -> dict[str, list[dict[str, Any]]]:
-        if not self.registry_path.exists():
-            return {"runs": []}
-
         try:
-            with self.registry_path.open("r", encoding="utf-8") as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("agent_runs")
+        except MetadataRepositoryError as exc:
             raise AgentRunRegistryError("Agent run registry file is corrupted.") from exc
 
-        if "runs" not in registry or not isinstance(registry["runs"], list):
-            raise AgentRunRegistryError("Agent run registry format is invalid.")
-
-        return registry
-
     def _save_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("agent_runs", registry)
+        except MetadataRepositoryError as exc:
+            raise AgentRunRegistryError("Agent run registry format is invalid.") from exc
 
     def _find_run_record(self, workflow_id: str) -> dict[str, Any]:
         registry = self._load_registry()

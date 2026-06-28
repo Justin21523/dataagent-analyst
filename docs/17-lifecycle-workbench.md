@@ -110,6 +110,27 @@ Bundle export creates a zip file containing:
 
 Bundle import creates new IDs to avoid collisions and imports artifacts into local runtime storage.
 
+## Metadata Persistence
+
+Lifecycle metadata is accessed through a repository layer. Local development and
+unit tests use JSON registries by default. Docker can switch the same service
+contracts to PostgreSQL with:
+
+```bash
+METADATA_BACKEND=postgres
+```
+
+The PostgreSQL backend stores each registry in a metadata table with common
+query fields and the original API payload in JSON/JSONB. Runtime artifacts remain
+as files under `data/`.
+
+Existing JSON registries can be migrated with:
+
+```bash
+python scripts/migrate_metadata_to_postgres.py --dry-run
+python scripts/migrate_metadata_to_postgres.py
+```
+
 ## Deferred Work
 
-PostgreSQL persistence, Qdrant-backed RAG, and dynamic agent planning are intentionally deferred until the lifecycle contracts stabilize.
+Qdrant-backed RAG and dynamic agent planning are intentionally deferred until the lifecycle contracts stabilize.

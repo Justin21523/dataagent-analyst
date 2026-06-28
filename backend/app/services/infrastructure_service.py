@@ -4,8 +4,11 @@ from time import perf_counter
 from urllib.parse import urlparse
 
 import httpx
+from sqlalchemy import select
 
 from backend.app.core.config import Settings
+from backend.app.db.session import get_engine
+from backend.app.repositories.metadata_repository import REGISTRY_SPECS
 from backend.app.schemas.infrastructure_schema import (
     InfrastructureServiceCheck,
     InfrastructureStatusResponse,
@@ -25,6 +28,7 @@ class InfrastructureService:
                 status="disabled",
                 checks_enabled=False,
                 services=[
+                    self._disabled_check("metadata"),
                     self._disabled_check("postgresql"),
                     self._disabled_check("qdrant"),
                     self._disabled_check("llama.cpp"),
@@ -32,11 +36,13 @@ class InfrastructureService:
                 checked_at=datetime.now(UTC),
             )
 
+        metadata_check = self._check_metadata_store()
         postgres_check = self._check_postgresql()
         qdrant_check = self._check_qdrant()
         llm_check = self._check_llm()
 
         required_checks = [
+            metadata_check,
             postgres_check,
             qdrant_check,
         ]
@@ -52,11 +58,58 @@ class InfrastructureService:
             status=overall_status,
             checks_enabled=True,
             services=[
+                metadata_check,
                 postgres_check,
                 qdrant_check,
                 llm_check,
             ],
             checked_at=datetime.now(UTC),
+        )
+
+    def _check_metadata_store(self) -> InfrastructureServiceCheck:
+        if self.settings.metadata_backend == "json":
+            return InfrastructureServiceCheck(
+                service="metadata",
+                status="healthy",
+                healthy=True,
+                message="Metadata backend is JSON registry files.",
+                latency_ms=None,
+                details={
+                    "backend": self.settings.metadata_backend,
+                    "directory": str(self.settings.processed_data_dir),
+                },
+            )
+
+        started_at = perf_counter()
+
+        try:
+            engine = get_engine(self.settings.database_url)
+            with engine.begin() as connection:
+                for spec in REGISTRY_SPECS.values():
+                    connection.execute(select(spec.table.c.record_id).limit(1))
+        except Exception as exc:
+            return InfrastructureServiceCheck(
+                service="metadata",
+                status="unhealthy",
+                healthy=False,
+                message=f"Postgres metadata check failed: {exc}",
+                latency_ms=self._latency_ms(started_at),
+                details={
+                    "backend": self.settings.metadata_backend,
+                    "tables": sorted(REGISTRY_SPECS),
+                },
+            )
+
+        return InfrastructureServiceCheck(
+            service="metadata",
+            status="healthy",
+            healthy=True,
+            message="Postgres metadata tables are queryable.",
+            latency_ms=self._latency_ms(started_at),
+            details={
+                "backend": self.settings.metadata_backend,
+                "tables": sorted(REGISTRY_SPECS),
+            },
         )
 
     def _check_postgresql(self) -> InfrastructureServiceCheck:

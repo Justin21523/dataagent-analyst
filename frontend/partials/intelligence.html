@@ -1,4 +1,4 @@
-<section class="agent-section">
+<section class="agent-section" data-route-section="agent-workflow">
         <div class="panel-header section-header">
           <div>
             <span class="panel-tag">Agent</span>
@@ -145,7 +145,94 @@
         </article>
       </section>
 
-<section class="ai-insight-section">
+      <section class="report-section backtest-section" data-route-section="lifecycle-backtests">
+        <div class="panel-header section-header">
+          <div>
+            <span class="panel-tag">Backtests</span>
+            <h3>Quality Gate Dashboard</h3>
+          </div>
+
+          <button id="refreshBacktestRunsButton" class="secondary-button" type="button">
+            Refresh Runs
+          </button>
+        </div>
+
+        <section class="workspace-grid backtest-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Runner</span>
+                <h3>Run Quality Gate</h3>
+              </div>
+            </div>
+
+            <div class="backtest-runner-controls">
+              <label for="backtestSuiteTypeSelect">Suite</label>
+              <select id="backtestSuiteTypeSelect">
+                <option value="api">API Workflow</option>
+                <option value="scenario">Scenario Suite</option>
+                <option value="ui">UI Playwright</option>
+                <option value="full">Full Backtest</option>
+              </select>
+
+              <button id="startBacktestJobButton" class="primary-button" type="button">
+                Run Backtest
+              </button>
+            </div>
+
+            <div id="backtestJobStatus" class="backtest-job-status">
+              <p class="empty-state">Start a backtest job to stream progress here.</p>
+            </div>
+
+            <pre id="backtestJobLog" class="code-output small-output backtest-job-log">No job events yet.</pre>
+
+            <div class="panel-header nested-header">
+              <div>
+                <span class="panel-tag">Jobs</span>
+                <h3>Recent Job Runs</h3>
+              </div>
+            </div>
+
+            <div id="backtestJobList" class="dataset-list">
+              <p class="empty-state">No backtest jobs loaded.</p>
+            </div>
+
+            <div class="panel-header nested-header">
+              <div>
+                <span class="panel-tag">Suites</span>
+                <h3>Scenario Summaries</h3>
+              </div>
+            </div>
+
+            <div id="backtestSuiteList" class="backtest-suite-list">
+              <p class="empty-state">No suite summaries loaded.</p>
+            </div>
+
+            <div class="panel-header">
+              <div>
+                <span class="panel-tag">Runs</span>
+                <h3>Recent Backtests</h3>
+              </div>
+            </div>
+
+            <div id="backtestRunList" class="dataset-list">
+              <p class="empty-state">No backtest runs loaded.</p>
+            </div>
+          </article>
+
+          <article class="panel backtest-detail-panel">
+            <div id="backtestRunDetail" class="backtest-run-detail">
+              <p class="empty-state">Select a run to inspect steps, assertions, payloads, and screenshots.</p>
+            </div>
+
+            <div id="backtestPayloadViewer" class="backtest-payload-viewer">
+              <p class="empty-state">Select a payload to preview JSON.</p>
+            </div>
+          </article>
+        </section>
+      </section>
+
+<section class="ai-insight-section" data-route-section="agent-insights">
         <div class="panel-header section-header">
           <div>
             <span class="panel-tag">Local LLM</span>
@@ -208,7 +295,7 @@
         </section>
       </section>
 
-<section class="workspace-grid">
+<section class="workspace-grid" data-route-section="lifecycle-drift">
         <article class="panel">
           <div class="panel-header">
             <div>
@@ -258,7 +345,7 @@
         </article>
       </section>
 
-<section class="report-section">
+<section class="report-section" data-route-section="lifecycle-reports">
         <div class="panel-header section-header">
           <div>
             <span class="panel-tag">Reports</span>

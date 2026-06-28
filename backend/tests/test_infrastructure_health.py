@@ -18,11 +18,12 @@ def test_infrastructure_status_returns_service_checks() -> None:
         "degraded",
     }
     assert "checks_enabled" in payload
-    assert len(payload["services"]) == 3
+    assert len(payload["services"]) == 4
 
     service_names = {service["service"] for service in payload["services"]}
 
     assert service_names == {
+        "metadata",
         "postgresql",
         "qdrant",
         "llama.cpp",

@@ -5,8 +5,15 @@ import {
   checkModelMigrationApi,
   createDriftReportApi,
   exportBundleApi,
+  buildBacktestJobEventStreamUrl,
+  buildBacktestScreenshotUrl,
+  getBacktestJobApi,
+  getBacktestPayloadApi,
+  getBacktestRunApi,
+  getWorkspaceStateApi,
   getLLMStatusApi,
   getDatasetPreviewApi,
+  updateWorkspaceStateApi,
   getDatasetSchemaApi,
   getSegmentMetricsApi,
   getThresholdAnalysisApi,
@@ -27,7 +34,12 @@ import {
   retrainModelApi,
   runWhatIfApi,
   runAgentWorkflowApi,
+  startBacktestJobApi,
   getAgentJobApi,
+  listBacktestJobEventsApi,
+  listBacktestJobsApi,
+  listBacktestRunsApi,
+  listBacktestSuitesApi,
   listAgentJobEventsApi,
   listAgentJobsApi,
   startAgentJobApi,
@@ -37,16 +49,19 @@ import {
   uploadDatasetApi,
 } from "./api/client.js";
 import {
-  initModelExplainability,
-} from "./features/modelExplainability.js";
+  renderBacktestLoading,
+  renderBacktestJobList,
+  renderBacktestJobLog,
+  renderBacktestJobStatus,
+  renderBacktestPayload,
+  renderBacktestRunDetail,
+  renderBacktestRunList,
+  renderBacktestSuites,
+} from "./components/backtestView.js";
 import {
-  initMlWorkbench,
-  loadMlWorkbench,
-} from "./features/mlWorkbench.js";
-import {
-  initVisualizationLab,
-  loadVisualizationLab,
-} from "./features/visualizationLab.js";
+  initWorkspaceContextUI,
+  setWorkspaceContext,
+} from "./state/contextStore.js";
 import {
   renderAgentJobEvents,
   renderAgentJobList,
@@ -84,94 +99,171 @@ import {
 import { renderJson } from "./utils/format.js";
 
 
-const elements = {
-  apiStatus: document.querySelector("#apiStatus"),
-  healthOutput: document.querySelector("#healthOutput"),
-  checkApiButton: document.querySelector("#checkApiButton"),
-  uploadForm: document.querySelector("#uploadForm"),
-  csvFileInput: document.querySelector("#csvFileInput"),
-  uploadStatus: document.querySelector("#uploadStatus"),
-  datasetList: document.querySelector("#datasetList"),
-  refreshDatasetsButton: document.querySelector("#refreshDatasetsButton"),
-  previewTitle: document.querySelector("#previewTitle"),
-  previewMeta: document.querySelector("#previewMeta"),
-  previewTable: document.querySelector("#previewTable"),
-  refreshDatasetVersionsButton: document.querySelector("#refreshDatasetVersionsButton"),
-  datasetVersionsPanel: document.querySelector("#datasetVersionsPanel"),
-  datasetTransformRecipeInput: document.querySelector("#datasetTransformRecipeInput"),
-  transformDropColumnsInput: document.querySelector("#transformDropColumnsInput"),
-  transformFillColumnInput: document.querySelector("#transformFillColumnInput"),
-  transformFillStrategySelect: document.querySelector("#transformFillStrategySelect"),
-  transformFillValueInput: document.querySelector("#transformFillValueInput"),
-  transformDatetimeColumnInput: document.querySelector("#transformDatetimeColumnInput"),
-  transformDropDuplicatesCheckbox: document.querySelector("#transformDropDuplicatesCheckbox"),
-  applyDatasetTransformButton: document.querySelector("#applyDatasetTransformButton"),
-  datasetTransformOutput: document.querySelector("#datasetTransformOutput"),
-  schemaSummary: document.querySelector("#schemaSummary"),
-  columnProfiles: document.querySelector("#columnProfiles"),
-  edaQualitySummary: document.querySelector("#edaQualitySummary"),
-  missingAnalysisTable: document.querySelector("#missingAnalysisTable"),
-  numericStatisticsTable: document.querySelector("#numericStatisticsTable"),
-  outlierAnalysisTable: document.querySelector("#outlierAnalysisTable"),
-  correlationAnalysisTable: document.querySelector("#correlationAnalysisTable"),
-  edaRecommendations: document.querySelector("#edaRecommendations"),
-  agentGoalInput: document.querySelector("#agentGoalInput"),
-  agentRunMlCheckbox: document.querySelector("#agentRunMlCheckbox"),
-  agentGenerateReportCheckbox: document.querySelector("#agentGenerateReportCheckbox"),
-  agentGenerateInsightCheckbox: document.querySelector("#agentGenerateInsightCheckbox"),
-  runAgentWorkflowButton: document.querySelector("#runAgentWorkflowButton"),
-  agentStatusPanel: document.querySelector("#agentStatusPanel"),
-  agentTimelinePanel: document.querySelector("#agentTimelinePanel"),
-  agentOutputsPanel: document.querySelector("#agentOutputsPanel"),
-  startAgentJobButton: document.querySelector("#startAgentJobButton"),
-  refreshAgentJobsButton: document.querySelector("#refreshAgentJobsButton"),
-  agentJobStatusPanel: document.querySelector("#agentJobStatusPanel"),
-  agentJobListPanel: document.querySelector("#agentJobListPanel"),
-  agentJobEventsPanel: document.querySelector("#agentJobEventsPanel"),
-  refreshAgentRunsButton: document.querySelector("#refreshAgentRunsButton"),
-  agentRunHistoryPanel: document.querySelector("#agentRunHistoryPanel"),
-  refreshLLMStatusButton: document.querySelector("#refreshLLMStatusButton"),
-  llmStatusPanel: document.querySelector("#llmStatusPanel"),
-  aiInsightGoalInput: document.querySelector("#aiInsightGoalInput"),
-  generateEdaInsightButton: document.querySelector("#generateEdaInsightButton"),
-  generateModelInsightButton: document.querySelector("#generateModelInsightButton"),
-  generateReportInsightButton: document.querySelector("#generateReportInsightButton"),
-  aiInsightOutput: document.querySelector("#aiInsightOutput"),
-  targetColumnSelect: document.querySelector("#targetColumnSelect"),
-  modelLeaderboard: document.querySelector("#modelLeaderboard"),
-  promoteModelButton: document.querySelector("#promoteModelButton"),
-  checkModelMigrationButton: document.querySelector("#checkModelMigrationButton"),
-  challengerModelIdInput: document.querySelector("#challengerModelIdInput"),
-  promoteChallengerButton: document.querySelector("#promoteChallengerButton"),
-  modelLifecycleOutput: document.querySelector("#modelLifecycleOutput"),
-  segmentColumnInput: document.querySelector("#segmentColumnInput"),
-  runThresholdAnalysisButton: document.querySelector("#runThresholdAnalysisButton"),
-  runSegmentMetricsButton: document.querySelector("#runSegmentMetricsButton"),
-  runWhatIfButton: document.querySelector("#runWhatIfButton"),
-  modelAdvancedDiagnosticsOutput: document.querySelector("#modelAdvancedDiagnosticsOutput"),
-  modelDiagnosticsPanel: document.querySelector("#modelDiagnosticsPanel"),
-  featureImportancePanel: document.querySelector("#featureImportancePanel"),
-  predictionModelSelect: document.querySelector("#predictionModelSelect"),
-  predictionJsonInput: document.querySelector("#predictionJsonInput"),
-  runPredictionButton: document.querySelector("#runPredictionButton"),
-  predictionCsvInput: document.querySelector("#predictionCsvInput"),
-  runBatchPredictionButton: document.querySelector("#runBatchPredictionButton"),
-  predictionStatus: document.querySelector("#predictionStatus"),
-  predictionResultsTable: document.querySelector("#predictionResultsTable"),
-  generateReportButton: document.querySelector("#generateReportButton"),
-  reportStatus: document.querySelector("#reportStatus"),
-  reportList: document.querySelector("#reportList"),
-  reportViewer: document.querySelector("#reportViewer"),
-  downloadReportButton: document.querySelector("#downloadReportButton"),
-  driftReferenceVersionInput: document.querySelector("#driftReferenceVersionInput"),
-  driftCurrentVersionInput: document.querySelector("#driftCurrentVersionInput"),
-  runDriftReportButton: document.querySelector("#runDriftReportButton"),
-  buildRetrainPlanButton: document.querySelector("#buildRetrainPlanButton"),
-  runRetrainChallengerButton: document.querySelector("#runRetrainChallengerButton"),
-  driftReportOutput: document.querySelector("#driftReportOutput"),
-  exportBundleButton: document.querySelector("#exportBundleButton"),
-  bundleOutput: document.querySelector("#bundleOutput"),
+const ELEMENT_SELECTORS = {
+  apiStatus: "#apiStatus",
+  healthOutput: "#healthOutput",
+  checkApiButton: "#checkApiButton",
+  uploadForm: "#uploadForm",
+  csvFileInput: "#csvFileInput",
+  uploadStatus: "#uploadStatus",
+  datasetList: "#datasetList",
+  refreshDatasetsButton: "#refreshDatasetsButton",
+  previewTitle: "#previewTitle",
+  previewMeta: "#previewMeta",
+  previewTable: "#previewTable",
+  refreshDatasetVersionsButton: "#refreshDatasetVersionsButton",
+  datasetVersionsPanel: "#datasetVersionsPanel",
+  datasetTransformRecipeInput: "#datasetTransformRecipeInput",
+  transformDropColumnsInput: "#transformDropColumnsInput",
+  transformFillColumnInput: "#transformFillColumnInput",
+  transformFillStrategySelect: "#transformFillStrategySelect",
+  transformFillValueInput: "#transformFillValueInput",
+  transformDatetimeColumnInput: "#transformDatetimeColumnInput",
+  transformDropDuplicatesCheckbox: "#transformDropDuplicatesCheckbox",
+  applyDatasetTransformButton: "#applyDatasetTransformButton",
+  datasetTransformOutput: "#datasetTransformOutput",
+  schemaSummary: "#schemaSummary",
+  columnProfiles: "#columnProfiles",
+  edaQualitySummary: "#edaQualitySummary",
+  missingAnalysisTable: "#missingAnalysisTable",
+  numericStatisticsTable: "#numericStatisticsTable",
+  outlierAnalysisTable: "#outlierAnalysisTable",
+  correlationAnalysisTable: "#correlationAnalysisTable",
+  edaRecommendations: "#edaRecommendations",
+  agentGoalInput: "#agentGoalInput",
+  agentRunMlCheckbox: "#agentRunMlCheckbox",
+  agentGenerateReportCheckbox: "#agentGenerateReportCheckbox",
+  agentGenerateInsightCheckbox: "#agentGenerateInsightCheckbox",
+  runAgentWorkflowButton: "#runAgentWorkflowButton",
+  agentStatusPanel: "#agentStatusPanel",
+  agentTimelinePanel: "#agentTimelinePanel",
+  agentOutputsPanel: "#agentOutputsPanel",
+  startAgentJobButton: "#startAgentJobButton",
+  refreshAgentJobsButton: "#refreshAgentJobsButton",
+  agentJobStatusPanel: "#agentJobStatusPanel",
+  agentJobListPanel: "#agentJobListPanel",
+  agentJobEventsPanel: "#agentJobEventsPanel",
+  refreshAgentRunsButton: "#refreshAgentRunsButton",
+  agentRunHistoryPanel: "#agentRunHistoryPanel",
+  refreshLLMStatusButton: "#refreshLLMStatusButton",
+  llmStatusPanel: "#llmStatusPanel",
+  aiInsightGoalInput: "#aiInsightGoalInput",
+  generateEdaInsightButton: "#generateEdaInsightButton",
+  generateModelInsightButton: "#generateModelInsightButton",
+  generateReportInsightButton: "#generateReportInsightButton",
+  aiInsightOutput: "#aiInsightOutput",
+  targetColumnSelect: "#targetColumnSelect",
+  modelLeaderboard: "#modelLeaderboard",
+  promoteModelButton: "#promoteModelButton",
+  checkModelMigrationButton: "#checkModelMigrationButton",
+  challengerModelIdInput: "#challengerModelIdInput",
+  promoteChallengerButton: "#promoteChallengerButton",
+  modelLifecycleOutput: "#modelLifecycleOutput",
+  segmentColumnInput: "#segmentColumnInput",
+  runThresholdAnalysisButton: "#runThresholdAnalysisButton",
+  runSegmentMetricsButton: "#runSegmentMetricsButton",
+  runWhatIfButton: "#runWhatIfButton",
+  modelAdvancedDiagnosticsOutput: "#modelAdvancedDiagnosticsOutput",
+  modelDiagnosticsPanel: "#modelDiagnosticsPanel",
+  featureImportancePanel: "#featureImportancePanel",
+  predictionModelSelect: "#predictionModelSelect",
+  predictionJsonInput: "#predictionJsonInput",
+  runPredictionButton: "#runPredictionButton",
+  predictionCsvInput: "#predictionCsvInput",
+  runBatchPredictionButton: "#runBatchPredictionButton",
+  predictionStatus: "#predictionStatus",
+  predictionResultsTable: "#predictionResultsTable",
+  generateReportButton: "#generateReportButton",
+  reportStatus: "#reportStatus",
+  reportList: "#reportList",
+  reportViewer: "#reportViewer",
+  downloadReportButton: "#downloadReportButton",
+  refreshBacktestRunsButton: "#refreshBacktestRunsButton",
+  backtestSuiteTypeSelect: "#backtestSuiteTypeSelect",
+  startBacktestJobButton: "#startBacktestJobButton",
+  backtestJobStatus: "#backtestJobStatus",
+  backtestJobLog: "#backtestJobLog",
+  backtestJobList: "#backtestJobList",
+  backtestSuiteList: "#backtestSuiteList",
+  backtestRunList: "#backtestRunList",
+  backtestRunDetail: "#backtestRunDetail",
+  backtestPayloadViewer: "#backtestPayloadViewer",
+  driftReferenceVersionInput: "#driftReferenceVersionInput",
+  driftCurrentVersionInput: "#driftCurrentVersionInput",
+  runDriftReportButton: "#runDriftReportButton",
+  buildRetrainPlanButton: "#buildRetrainPlanButton",
+  runRetrainChallengerButton: "#runRetrainChallengerButton",
+  driftReportOutput: "#driftReportOutput",
+  exportBundleButton: "#exportBundleButton",
+  bundleOutput: "#bundleOutput",
 };
+
+const missingElement = new Proxy(
+  {},
+  {
+    get(_, property) {
+      if (property === "addEventListener") {
+        return () => {};
+      }
+
+      if (
+        property === "appendChild"
+        || property === "removeChild"
+        || property === "replaceChildren"
+      ) {
+        return () => {};
+      }
+
+      if (property === "querySelector" || property === "closest") {
+        return () => null;
+      }
+
+      if (property === "querySelectorAll") {
+        return () => [];
+      }
+
+      if (property === "files") {
+        return [];
+      }
+
+      if (property === "classList") {
+        return {
+          add: () => {},
+          remove: () => {},
+          toggle: () => {},
+          contains: () => false,
+        };
+      }
+
+      if (property === "dataset") {
+        return {};
+      }
+
+      if (property === "value" || property === "textContent" || property === "innerHTML") {
+        return "";
+      }
+
+      if (property === "checked") {
+        return false;
+      }
+
+      return null;
+    },
+    set() {
+      return true;
+    },
+  },
+);
+
+const elements = new Proxy(
+  {},
+  {
+    get(_, key) {
+      const selector = ELEMENT_SELECTORS[key];
+      return selector ? document.querySelector(selector) || missingElement : missingElement;
+    },
+  },
+);
 
 
 let currentDatasetId = null;
@@ -180,6 +272,16 @@ let currentModels = [];
 let currentReportMarkdown = "";
 let currentAgentJobEventSource = null;
 let currentDriftReport = null;
+let currentBacktestRunId = null;
+let currentBacktestJobId = null;
+let currentBacktestJobEventSource = null;
+let currentRoute = "data-upload";
+let workspaceStateHydrated = false;
+let workspacePersistenceAvailable = true;
+const WORKSPACE_ID = "default";
+let visualizationFeature = null;
+let mlWorkbenchFeature = null;
+let modelExplainabilityFeature = null;
 
 
 function updateApiStatus(status, message) {
@@ -242,6 +344,24 @@ async function uploadDataset(event) {
     });
 
     elements.csvFileInput.value = "";
+    setWorkspaceContext(
+      {
+        dataset: payload.dataset,
+        version: {
+          version_id: payload.dataset.latest_version_id || "v1",
+        },
+        models: [],
+        selectedModelId: null,
+        targetColumn: null,
+        workflowFlags: {},
+        profileLoaded: false,
+        evaluationLoaded: false,
+        driftStatus: "Not checked",
+        driftReportId: null,
+        retrainCandidateId: null,
+      },
+      { replaceWorkflowFlags: true },
+    );
     await loadDatasets();
     await loadDatasetWorkspace(payload.dataset.id);
   } catch (error) {
@@ -259,7 +379,38 @@ async function loadDatasets() {
   try {
     const payload = await listDatasetsApi();
 
-    renderDatasetList(elements.datasetList, payload.datasets, loadDatasetWorkspace);
+    renderDatasetList(
+      elements.datasetList,
+      payload.datasets,
+      (datasetId) => {
+        const selectedDataset = payload.datasets.find((dataset) => dataset.id === datasetId);
+
+        if (selectedDataset) {
+          setWorkspaceContext({
+            dataset: selectedDataset,
+            version: {
+              version_id: selectedDataset.latest_version_id || "v1",
+            },
+            driftStatus: "Not checked",
+          });
+        }
+
+        loadDatasetWorkspace(datasetId);
+      },
+    );
+
+    const selectedDataset = payload.datasets.find(
+      (dataset) => dataset.id === currentDatasetId,
+    );
+
+    if (selectedDataset) {
+      setWorkspaceContext({
+        dataset: selectedDataset,
+        version: {
+          version_id: selectedDataset.latest_version_id || "v1",
+        },
+      });
+    }
   } catch (error) {
     elements.datasetList.innerHTML = `
       <p class="empty-state">Failed to load datasets: ${error.message}</p>
@@ -269,21 +420,24 @@ async function loadDatasets() {
 
 
 async function loadDatasetWorkspace(datasetId) {
-  // 點選資料集後，同步載入 preview、schema、EDA、視覺化建議與模型紀錄。
+  // Dataset 切換只刷新目前 route；其他 route 等使用者進入時再 lazy-load。
   currentDatasetId = datasetId;
+  setWorkspaceContext(
+    {
+      models: [],
+      selectedModelId: null,
+      targetColumn: null,
+      workflowFlags: {},
+      profileLoaded: false,
+      evaluationLoaded: false,
+      driftStatus: "Not checked",
+      driftReportId: null,
+      retrainCandidateId: null,
+    },
+    { replaceWorkflowFlags: true },
+  );
 
-  await Promise.all([
-    loadDatasetPreview(datasetId),
-    loadDatasetVersions(datasetId),
-    loadDatasetSchema(datasetId),
-    loadEdaSummary(datasetId),
-    loadVisualizationLab(datasetId),
-    loadModelLeaderboard(datasetId),
-    loadMlWorkbench(datasetId),
-    loadReports(datasetId),
-    loadAgentRunHistory(datasetId),
-    loadAgentJobs(datasetId),
-  ]);
+  await refreshCurrentRoute();
 }
 
 
@@ -312,6 +466,18 @@ async function loadDatasetVersions(datasetId) {
 
   try {
     const payload = await listDatasetVersionsApi(datasetId);
+    const latestVersion = payload.versions.find(
+      (version) => version.version_id === payload.latest_version_id,
+    );
+
+    setWorkspaceContext({
+      version: latestVersion || {
+        version_id: payload.latest_version_id,
+      },
+      workflowFlags: {
+        schemaReviewed: true,
+      },
+    });
 
     elements.datasetVersionsPanel.innerHTML = `
       <table class="preview-table">
@@ -466,6 +632,13 @@ async function loadDatasetSchema(datasetId) {
     const payload = await getDatasetSchemaApi(datasetId);
 
     currentSchemaColumns = payload.columns;
+    setWorkspaceContext({
+      targetColumn: payload.summary.target_candidates?.[0] || null,
+      profileLoaded: true,
+      workflowFlags: {
+        schemaReviewed: true,
+      },
+    });
 
     renderSchemaSummary(elements.schemaSummary, payload.summary);
     renderColumnProfiles(elements.columnProfiles, payload.columns);
@@ -501,6 +674,11 @@ async function loadEdaSummary(datasetId) {
       },
       payload,
     );
+    setWorkspaceContext({
+      workflowFlags: {
+        edaReviewed: true,
+      },
+    });
   } catch (error) {
     elements.edaQualitySummary.innerHTML = `
       <p class="empty-state">Failed to load EDA summary: ${error.message}</p>
@@ -542,6 +720,15 @@ async function trainBaselineModels() {
     });
 
     currentModels = result.models;
+    setWorkspaceContext({
+      models: result.models,
+      selectedModelId: result.best_model_id,
+      targetColumn,
+      workflowFlags: {
+        trainingCompleted: true,
+      },
+      evaluationLoaded: false,
+    });
 
     renderTrainingResult(elements.mlTrainingStatus, result);
     renderModelLeaderboard(elements.modelLeaderboard, result.models);
@@ -564,6 +751,10 @@ async function loadModelLeaderboard(datasetId) {
   try {
     const payload = await listDatasetModelsApi(datasetId);
     currentModels = payload.models;
+    setWorkspaceContext({
+      models: payload.models,
+      selectedModelId: payload.models[0]?.id || null,
+    });
 
     window.dispatchEvent(
       new CustomEvent(
@@ -608,6 +799,13 @@ async function loadModelEvaluation(modelId) {
 
   try {
     const evaluation = await getModelEvaluationApi(modelId);
+    setWorkspaceContext({
+      selectedModelId: modelId,
+      workflowFlags: {
+        evaluationCompleted: true,
+      },
+      evaluationLoaded: true,
+    });
 
     renderModelDiagnostics(elements.modelDiagnosticsPanel, evaluation);
     renderFeatureImportanceTable(elements.featureImportancePanel, evaluation.feature_importance);
@@ -660,6 +858,11 @@ async function checkSelectedModelMigration() {
   try {
     const payload = await checkModelMigrationApi(selectedModel.id);
     renderJson(elements.modelLifecycleOutput, payload);
+    setWorkspaceContext({
+      workflowFlags: {
+        migrationChecked: true,
+      },
+    });
   } catch (error) {
     renderJson(elements.modelLifecycleOutput, {
       status: "error",
@@ -683,6 +886,12 @@ async function promoteChallengerModel() {
   try {
     const payload = await promoteChallengerApi(selectedModel.id, challengerModelId);
     renderJson(elements.modelLifecycleOutput, payload);
+    setWorkspaceContext({
+      retrainCandidateId: null,
+      workflowFlags: {
+        migrationChecked: true,
+      },
+    });
 
     if (currentDatasetId) {
       await loadModelLeaderboard(currentDatasetId);
@@ -828,6 +1037,11 @@ async function runSinglePrediction() {
     });
 
     renderPredictionResults(elements.predictionResultsTable, response);
+    setWorkspaceContext({
+      workflowFlags: {
+        predictionCompleted: true,
+      },
+    });
   } catch (error) {
     renderJson(elements.predictionStatus, {
       status: "error",
@@ -873,6 +1087,11 @@ async function runBatchPrediction() {
     });
 
     renderPredictionResults(elements.predictionResultsTable, response);
+    setWorkspaceContext({
+      workflowFlags: {
+        predictionCompleted: true,
+      },
+    });
   } catch (error) {
     renderJson(elements.predictionStatus, {
       status: "error",
@@ -911,6 +1130,11 @@ async function generateDatasetReport() {
     });
 
     renderReportViewer(elements.reportViewer, currentReportMarkdown);
+    setWorkspaceContext({
+      workflowFlags: {
+        reportGenerated: true,
+      },
+    });
     await loadReports(currentDatasetId);
   } catch (error) {
     renderReportStatus(elements.reportStatus, {
@@ -976,6 +1200,213 @@ function downloadCurrentReport() {
   URL.revokeObjectURL(url);
 }
 
+
+async function loadBacktestDashboard() {
+  renderBacktestLoading(elements.backtestJobList, "Loading backtest jobs...");
+  renderBacktestLoading(elements.backtestRunList, "Loading backtest runs...");
+  renderBacktestLoading(elements.backtestSuiteList, "Loading suite summaries...");
+  renderBacktestLoading(elements.backtestRunDetail, "Loading latest backtest run...");
+  renderBacktestPayload(elements.backtestPayloadViewer, null);
+
+  try {
+    const [jobsPayload, runsPayload, suitesPayload] = await Promise.all([
+      listBacktestJobsApi(25),
+      listBacktestRunsApi(50),
+      listBacktestSuitesApi(),
+    ]);
+
+    renderBacktestJobList(elements.backtestJobList, jobsPayload.jobs || [], currentBacktestJobId);
+    renderBacktestSuites(elements.backtestSuiteList, suitesPayload.suites || []);
+
+    const runs = runsPayload.runs || [];
+    const selectedRunId = runs.some((run) => run.run_id === currentBacktestRunId)
+      ? currentBacktestRunId
+      : runs[0]?.run_id || null;
+
+    currentBacktestRunId = selectedRunId;
+    renderBacktestRunList(
+      elements.backtestRunList,
+      runs,
+      selectedRunId,
+      loadBacktestRunDetail,
+    );
+
+    if (selectedRunId) {
+      await loadBacktestRunDetail(selectedRunId);
+    } else {
+      renderBacktestLoading(
+        elements.backtestRunDetail,
+        "No backtest runs found. Run a backtest suite to populate this dashboard.",
+      );
+    }
+  } catch (error) {
+    renderBacktestLoading(
+      elements.backtestJobList,
+      `Failed to load backtest jobs: ${error.message}`,
+    );
+    renderBacktestLoading(
+      elements.backtestRunList,
+      `Failed to load backtests: ${error.message}`,
+    );
+    renderBacktestLoading(
+      elements.backtestRunDetail,
+      "Backtest artifacts are unavailable.",
+    );
+  }
+}
+
+
+async function startBacktestJob() {
+  closeCurrentBacktestJobStream();
+  const suiteType = elements.backtestSuiteTypeSelect.value || "api";
+
+  renderBacktestJobStatus(elements.backtestJobStatus, {
+    job_id: "pending",
+    suite_type: suiteType,
+    status: "queued",
+    event_count: 0,
+    run_ids: [],
+    suite_ids: [],
+  });
+  renderBacktestJobLog(elements.backtestJobLog, []);
+
+  try {
+    const payload = await startBacktestJobApi({
+      suite_type: suiteType,
+    });
+
+    currentBacktestJobId = payload.job.job_id;
+    renderBacktestJobStatus(elements.backtestJobStatus, payload.job);
+    await loadBacktestJobs();
+    streamBacktestJobEvents(currentBacktestJobId);
+  } catch (error) {
+    elements.backtestJobStatus.innerHTML = `
+      <p class="empty-state">Failed to start backtest job: ${error.message}</p>
+    `;
+  }
+}
+
+
+async function loadBacktestJobs() {
+  try {
+    const payload = await listBacktestJobsApi(25);
+    renderBacktestJobList(elements.backtestJobList, payload.jobs || [], currentBacktestJobId);
+  } catch (error) {
+    renderBacktestLoading(
+      elements.backtestJobList,
+      `Failed to load backtest jobs: ${error.message}`,
+    );
+  }
+}
+
+
+async function loadBacktestJobDetail(jobId) {
+  currentBacktestJobId = jobId;
+
+  try {
+    const [job, eventsPayload] = await Promise.all([
+      getBacktestJobApi(jobId),
+      listBacktestJobEventsApi(jobId),
+    ]);
+    renderBacktestJobStatus(elements.backtestJobStatus, job);
+    renderBacktestJobLog(elements.backtestJobLog, eventsPayload.events || []);
+
+    const jobButtons = elements.backtestJobList.querySelectorAll("[data-backtest-job-id]");
+    jobButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.backtestJobId === jobId);
+    });
+  } catch (error) {
+    elements.backtestJobStatus.innerHTML = `
+      <p class="empty-state">Failed to load backtest job: ${error.message}</p>
+    `;
+  }
+}
+
+
+function streamBacktestJobEvents(jobId) {
+  closeCurrentBacktestJobStream();
+  const events = [];
+  currentBacktestJobEventSource = new EventSource(buildBacktestJobEventStreamUrl(jobId));
+
+  currentBacktestJobEventSource.onmessage = async (message) => {
+    const payload = JSON.parse(message.data);
+
+    if (payload.event_type !== "stream_closed") {
+      events.push(payload);
+      renderBacktestJobLog(elements.backtestJobLog, events);
+    }
+
+    if (payload.event_type === "stream_closed" || ["success", "failed"].includes(payload.status)) {
+      closeCurrentBacktestJobStream();
+      await loadBacktestJobDetail(jobId);
+      await loadBacktestDashboard();
+
+      const latestRunId = payload.run_ids?.[payload.run_ids.length - 1];
+      if (latestRunId) {
+        await loadBacktestRunDetail(latestRunId);
+      }
+    }
+  };
+
+  currentBacktestJobEventSource.onerror = () => {
+    closeCurrentBacktestJobStream();
+  };
+}
+
+
+function closeCurrentBacktestJobStream() {
+  if (currentBacktestJobEventSource) {
+    currentBacktestJobEventSource.close();
+    currentBacktestJobEventSource = null;
+  }
+}
+
+
+async function loadBacktestRunDetail(runId) {
+  currentBacktestRunId = runId;
+  renderBacktestLoading(elements.backtestRunDetail, "Loading run detail...");
+  renderBacktestPayload(elements.backtestPayloadViewer, null);
+
+  try {
+    const detail = await getBacktestRunApi(runId);
+
+    renderBacktestRunDetail(
+      elements.backtestRunDetail,
+      detail,
+      {
+        buildScreenshotUrl: buildBacktestScreenshotUrl,
+        onSelectPayload: loadBacktestPayload,
+      },
+    );
+
+    const runButtons = elements.backtestRunList.querySelectorAll("[data-backtest-run-id]");
+    runButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.backtestRunId === runId);
+    });
+  } catch (error) {
+    renderBacktestLoading(
+      elements.backtestRunDetail,
+      `Failed to load run detail: ${error.message}`,
+    );
+  }
+}
+
+
+async function loadBacktestPayload(runId, payloadName) {
+  renderBacktestLoading(elements.backtestPayloadViewer, "Loading payload JSON...");
+
+  try {
+    const payloadDetail = await getBacktestPayloadApi(runId, payloadName);
+    renderBacktestPayload(elements.backtestPayloadViewer, payloadDetail);
+  } catch (error) {
+    renderBacktestLoading(
+      elements.backtestPayloadViewer,
+      `Failed to load payload: ${error.message}`,
+    );
+  }
+}
+
+
 async function runDriftReport() {
   if (!currentDatasetId) {
     renderJson(elements.driftReportOutput, {
@@ -1007,6 +1438,13 @@ async function runDriftReport() {
     });
 
     currentDriftReport = payload;
+    setWorkspaceContext({
+      driftReportId: payload.report_id || payload.id || null,
+      driftStatus: payload.status,
+      workflowFlags: {
+        driftChecked: true,
+      },
+    });
     renderDriftReportSummary(payload);
   } catch (error) {
     renderJson(elements.driftReportOutput, {
@@ -1031,6 +1469,11 @@ async function buildRetrainPlan() {
   try {
     const plan = await getRetrainPlanApi(selectedModel.id, payload);
     renderJson(elements.driftReportOutput, plan);
+    setWorkspaceContext({
+      workflowFlags: {
+        retrainPlanBuilt: true,
+      },
+    });
   } catch (error) {
     renderJson(elements.driftReportOutput, {
       status: "error",
@@ -1055,6 +1498,12 @@ async function retrainChallenger() {
     const response = await retrainModelApi(selectedModel.id, payload);
     elements.challengerModelIdInput.value = response.challenger_model.id;
     renderJson(elements.driftReportOutput, response);
+    setWorkspaceContext({
+      retrainCandidateId: response.challenger_model.id,
+      workflowFlags: {
+        retrainCandidateCreated: true,
+      },
+    });
 
     if (currentDatasetId) {
       await loadModelLeaderboard(currentDatasetId);
@@ -1454,22 +1903,67 @@ function closeCurrentAgentJobStream() {
 
 
 let appInitialized = false;
+let globalEventsBound = false;
 
 
-function initializeApp() {
-  // Dynamic partial loading may finish before or after DOMContentLoaded。
+export async function initializeAppShell() {
   if (appInitialized) {
     return;
   }
 
   appInitialized = true;
-  // 頁面載入後先確認 API 狀態，再載入 dataset registry。
-  initVisualizationLab();
-  initMlWorkbench();
-  initModelExplainability();
-  checkApiHealth();
-  refreshLLMStatus();
-  loadDatasets();
+  initWorkspaceContextUI({
+    persistWorkspaceContext,
+  });
+  await hydrateWorkspaceState();
+  bindGlobalEvents();
+}
+
+
+export async function ensureRouteInitialized(routeDetail) {
+  currentRoute = routeDetail.route;
+  setWorkspaceContext({
+    activeRoute: currentRoute,
+  });
+
+  bindAvailableElements();
+
+  if (routeDetail.group === "data") {
+    await initializeDataRoute(routeDetail.route);
+  }
+
+  if (routeDetail.group === "analyze") {
+    await initializeAnalyzeRoute(routeDetail.route);
+  }
+
+  if (routeDetail.group === "model") {
+    await initializeModelRoute(routeDetail.route);
+  }
+
+  if (routeDetail.group === "intelligence") {
+    await initializeIntelligenceRoute(routeDetail.route);
+  }
+}
+
+
+function bindGlobalEvents() {
+  if (globalEventsBound) {
+    return;
+  }
+
+  globalEventsBound = true;
+
+  window.addEventListener(
+    "dataagent:ml-plan-ready",
+    (event) => {
+      setWorkspaceContext({
+        targetColumn: event.detail?.targetColumn || null,
+        workflowFlags: {
+          mlPlanReady: true,
+        },
+      });
+    },
+  );
 
   window.addEventListener(
     "dataagent:ml-experiment-completed",
@@ -1481,6 +1975,14 @@ function initializeApp() {
         return;
       }
 
+      setWorkspaceContext({
+        targetColumn: event.detail?.targetColumn || null,
+        selectedModelId: bestModelId || null,
+        workflowFlags: {
+          trainingCompleted: true,
+        },
+      });
+
       await loadModelLeaderboard(datasetId);
 
       if (bestModelId) {
@@ -1489,135 +1991,340 @@ function initializeApp() {
     },
   );
 
-  elements.checkApiButton.addEventListener("click", () => {
-    checkApiHealth();
-  });
+  window.addEventListener(
+    "dataagent:model-explainability-completed",
+    () => {
+      setWorkspaceContext({
+        workflowFlags: {
+          explainabilityCompleted: true,
+        },
+      });
+    },
+  );
+}
 
-  elements.uploadForm.addEventListener("submit", uploadDataset);
 
-  elements.refreshDatasetsButton.addEventListener("click", () => {
-    loadDatasets();
-  });
-
-  elements.refreshDatasetVersionsButton.addEventListener("click", () => {
+function bindAvailableElements() {
+  bindOnce(elements.checkApiButton, "click", checkApiHealth);
+  bindOnce(elements.uploadForm, "submit", uploadDataset);
+  bindOnce(elements.refreshDatasetsButton, "click", loadDatasets);
+  bindOnce(elements.refreshDatasetVersionsButton, "click", () => {
     if (currentDatasetId) {
       loadDatasetVersions(currentDatasetId);
     }
   });
-
-  elements.applyDatasetTransformButton.addEventListener("click", () => {
-    applyDatasetTransform();
-  });
-
-  elements.predictionModelSelect.addEventListener("change", () => {
+  bindOnce(elements.applyDatasetTransformButton, "click", applyDatasetTransform);
+  bindOnce(elements.predictionModelSelect, "change", () => {
     updatePredictionTemplate();
 
     const selectedModel = getSelectedPredictionModel();
+    setWorkspaceContext({
+      selectedModelId: selectedModel?.id || null,
+    });
 
     if (selectedModel) {
       loadModelEvaluation(selectedModel.id);
     }
   });
-
-  elements.runPredictionButton.addEventListener("click", () => {
-    runSinglePrediction();
+  bindOnce(elements.runPredictionButton, "click", runSinglePrediction);
+  bindOnce(elements.runBatchPredictionButton, "click", runBatchPrediction);
+  bindOnce(elements.promoteModelButton, "click", promoteSelectedModel);
+  bindOnce(elements.checkModelMigrationButton, "click", checkSelectedModelMigration);
+  bindOnce(elements.promoteChallengerButton, "click", promoteChallengerModel);
+  bindOnce(elements.runThresholdAnalysisButton, "click", runThresholdAnalysis);
+  bindOnce(elements.runSegmentMetricsButton, "click", runSegmentMetrics);
+  bindOnce(elements.runWhatIfButton, "click", runWhatIfSample);
+  bindOnce(elements.generateReportButton, "click", generateDatasetReport);
+  bindOnce(elements.downloadReportButton, "click", downloadCurrentReport);
+  bindOnce(elements.refreshBacktestRunsButton, "click", loadBacktestDashboard);
+  bindOnce(elements.startBacktestJobButton, "click", startBacktestJob);
+  bindOnce(elements.backtestJobList, "click", (event) => {
+    const button = event.target.closest("[data-backtest-job-id]");
+    if (button) {
+      loadBacktestJobDetail(button.dataset.backtestJobId);
+    }
   });
-
-  elements.runBatchPredictionButton.addEventListener("click", () => {
-    runBatchPrediction();
-  });
-
-  elements.promoteModelButton.addEventListener("click", () => {
-    promoteSelectedModel();
-  });
-
-  elements.checkModelMigrationButton.addEventListener("click", () => {
-    checkSelectedModelMigration();
-  });
-
-  elements.promoteChallengerButton.addEventListener("click", () => {
-    promoteChallengerModel();
-  });
-
-  elements.runThresholdAnalysisButton.addEventListener("click", () => {
-    runThresholdAnalysis();
-  });
-
-  elements.runSegmentMetricsButton.addEventListener("click", () => {
-    runSegmentMetrics();
-  });
-
-  elements.runWhatIfButton.addEventListener("click", () => {
-    runWhatIfSample();
-  });
-
-  elements.generateReportButton.addEventListener("click", () => {
-    generateDatasetReport();
-  });
-
-  elements.downloadReportButton.addEventListener("click", () => {
-    downloadCurrentReport();
-  });
-
-  elements.runDriftReportButton.addEventListener("click", () => {
-    runDriftReport();
-  });
-
-  elements.buildRetrainPlanButton.addEventListener("click", () => {
-    buildRetrainPlan();
-  });
-
-  elements.runRetrainChallengerButton.addEventListener("click", () => {
-    retrainChallenger();
-  });
-
-  elements.exportBundleButton.addEventListener("click", () => {
-    exportCurrentBundle();
-  });
-
-  elements.refreshLLMStatusButton.addEventListener("click", () => {
-    refreshLLMStatus();
-  });
-
-  elements.generateEdaInsightButton.addEventListener("click", () => {
-    generateEdaInsight();
-  });
-
-  elements.generateModelInsightButton.addEventListener("click", () => {
-    generateModelInsight();
-  });
-
-  elements.generateReportInsightButton.addEventListener("click", () => {
-    generateReportInsight();
-  });
-
-  elements.runAgentWorkflowButton.addEventListener("click", () => {
-    runAgentWorkflow();
-  });
-
-  elements.refreshAgentRunsButton.addEventListener("click", () => {
+  bindOnce(elements.runDriftReportButton, "click", runDriftReport);
+  bindOnce(elements.buildRetrainPlanButton, "click", buildRetrainPlan);
+  bindOnce(elements.runRetrainChallengerButton, "click", retrainChallenger);
+  bindOnce(elements.exportBundleButton, "click", exportCurrentBundle);
+  bindOnce(elements.refreshLLMStatusButton, "click", refreshLLMStatus);
+  bindOnce(elements.generateEdaInsightButton, "click", generateEdaInsight);
+  bindOnce(elements.generateModelInsightButton, "click", generateModelInsight);
+  bindOnce(elements.generateReportInsightButton, "click", generateReportInsight);
+  bindOnce(elements.runAgentWorkflowButton, "click", runAgentWorkflow);
+  bindOnce(elements.refreshAgentRunsButton, "click", () => {
     if (currentDatasetId) {
       loadAgentRunHistory(currentDatasetId);
     }
   });
-
-  elements.startAgentJobButton.addEventListener("click", () => {
-    startBackgroundAgentJob();
-  });
-
-  elements.refreshAgentJobsButton.addEventListener("click", () => {
+  bindOnce(elements.startAgentJobButton, "click", startBackgroundAgentJob);
+  bindOnce(elements.refreshAgentJobsButton, "click", () => {
     if (currentDatasetId) {
       loadAgentJobs(currentDatasetId);
     }
   });
-
 }
 
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeApp, {
-    once: true,
+async function initializeDataRoute(routeName) {
+  if (routeName === "data-upload") {
+    await checkApiHealth();
+  }
+
+  await loadDatasets();
+
+  if (currentDatasetId && routeName === "data-preview") {
+    await loadDatasetPreview(currentDatasetId);
+  }
+
+  if (currentDatasetId && routeName === "data-versions") {
+    await loadDatasetVersions(currentDatasetId);
+  }
+}
+
+
+async function initializeAnalyzeRoute(routeName) {
+  if (!currentDatasetId) {
+    return;
+  }
+
+  if (routeName === "analyze-schema") {
+    await loadDatasetSchema(currentDatasetId);
+  } else if (routeName === "analyze-eda") {
+    await loadEdaSummary(currentDatasetId);
+  } else if (routeName === "analyze-visualization") {
+    const feature = await getVisualizationFeature();
+    feature.initVisualizationLab();
+    await feature.loadVisualizationLab(currentDatasetId);
+  }
+}
+
+
+async function initializeModelRoute(routeName) {
+  if (!currentDatasetId) {
+    return;
+  }
+
+  if (routeName === "model-workbench") {
+    const feature = await getMlWorkbenchFeature();
+    feature.initMlWorkbench();
+    await loadDatasetSchema(currentDatasetId);
+    await feature.loadMlWorkbench(currentDatasetId);
+    return;
+  }
+
+  await loadModelLeaderboard(currentDatasetId);
+
+  if (routeName === "model-explainability") {
+    const feature = await getModelExplainabilityFeature();
+    feature.initModelExplainability();
+  }
+}
+
+
+async function initializeIntelligenceRoute(routeName) {
+  if (routeName === "agent-insights") {
+    await refreshLLMStatus();
+  }
+
+  if (routeName === "lifecycle-backtests") {
+    await loadBacktestDashboard();
+    return;
+  }
+
+  if (!currentDatasetId) {
+    return;
+  }
+
+  if (routeName === "agent-workflow") {
+    await Promise.all([
+      loadAgentRunHistory(currentDatasetId),
+      loadAgentJobs(currentDatasetId),
+    ]);
+  } else if (routeName === "lifecycle-reports") {
+    await loadReports(currentDatasetId);
+  } else if (routeName === "lifecycle-drift") {
+    await loadDatasetVersions(currentDatasetId);
+    await loadModelLeaderboard(currentDatasetId);
+  }
+}
+
+
+async function refreshCurrentRoute() {
+  await ensureRouteInitialized({
+    route: currentRoute,
+    group: routeGroupFor(currentRoute),
+    section: currentRoute,
   });
-} else {
-  initializeApp();
+}
+
+
+function routeGroupFor(routeName) {
+  if (routeName.startsWith("data-")) {
+    return "data";
+  }
+
+  if (routeName.startsWith("analyze-")) {
+    return "analyze";
+  }
+
+  if (routeName.startsWith("model-")) {
+    return "model";
+  }
+
+  return "intelligence";
+}
+
+
+async function getVisualizationFeature() {
+  if (!visualizationFeature) {
+    visualizationFeature = await import("./features/visualizationLab.js");
+  }
+
+  return visualizationFeature;
+}
+
+
+async function getMlWorkbenchFeature() {
+  if (!mlWorkbenchFeature) {
+    mlWorkbenchFeature = await import("./features/mlWorkbench.js");
+  }
+
+  return mlWorkbenchFeature;
+}
+
+
+async function getModelExplainabilityFeature() {
+  if (!modelExplainabilityFeature) {
+    modelExplainabilityFeature = await import("./features/modelExplainability.js");
+  }
+
+  return modelExplainabilityFeature;
+}
+
+
+function bindOnce(element, eventName, handler) {
+  if (!element || !element.dataset) {
+    return;
+  }
+
+  const key = `bound${eventName}`;
+
+  if (element.dataset[key]) {
+    return;
+  }
+
+  element.addEventListener(eventName, handler);
+  element.dataset[key] = "true";
+}
+
+
+async function hydrateWorkspaceState() {
+  if (workspaceStateHydrated) {
+    return;
+  }
+
+  workspaceStateHydrated = true;
+
+  try {
+    const state = await getWorkspaceStateApi(WORKSPACE_ID);
+    currentDatasetId = state.dataset_id || null;
+    currentRoute = state.active_route || currentRoute;
+    setWorkspaceContext(
+      {
+        activeRoute: currentRoute,
+        version: state.dataset_version_id ? { version_id: state.dataset_version_id } : null,
+        targetColumn: state.target_column || null,
+        selectedModelId: state.selected_model_id || null,
+        driftReportId: state.drift_report_id || null,
+        driftStatus: state.drift_status || "Not checked",
+        workflowFlags: state.workflow_flags || {},
+        retrainCandidateId: state.retrain_candidate_id || null,
+      },
+      {
+        persist: false,
+        replaceWorkflowFlags: true,
+      },
+    );
+
+    if (window.location.hash.length <= 1 && state.active_route) {
+      history.replaceState(null, "", `#${state.active_route}`);
+    }
+
+    if (state.dataset_id) {
+      const payload = await listDatasetsApi();
+      const dataset = payload.datasets.find(
+        (item) => item.id === state.dataset_id,
+      );
+
+      if (dataset) {
+        setWorkspaceContext(
+          {
+            dataset,
+            version: {
+              version_id: state.dataset_version_id || dataset.latest_version_id || "v1",
+            },
+          },
+          {
+            persist: false,
+          },
+        );
+      }
+    }
+  } catch (error) {
+    workspacePersistenceAvailable = false;
+    window.dispatchEvent(
+      new CustomEvent("dataagent:toast", {
+        detail: {
+          type: "error",
+          message: `Failed to restore workspace state: ${error.message}`,
+        },
+      }),
+    );
+  }
+}
+
+
+function persistWorkspaceContext(context) {
+  if (!workspacePersistenceAvailable) {
+    return;
+  }
+
+  const dataset = context.dataset;
+  const selectedModel = findSelectedContextModel(context);
+
+  updateWorkspaceStateApi(
+    WORKSPACE_ID,
+    {
+      active_route: context.activeRoute || currentRoute,
+      dataset_id: dataset?.id || currentDatasetId || null,
+      dataset_version_id: context.version?.version_id || dataset?.latest_version_id || null,
+      target_column: context.targetColumn || selectedModel?.target_column || null,
+      selected_model_id: context.selectedModelId || selectedModel?.id || null,
+      drift_report_id: context.driftReportId || null,
+      drift_status: context.driftStatus || "Not checked",
+      workflow_flags: context.workflowFlags || {},
+      retrain_candidate_id: context.retrainCandidateId || null,
+    },
+  ).catch((error) => {
+    workspacePersistenceAvailable = false;
+    window.dispatchEvent(
+      new CustomEvent("dataagent:toast", {
+        detail: {
+          type: "error",
+          message: `Failed to persist workspace state: ${error.message}`,
+        },
+      }),
+    );
+  });
+}
+
+
+function findSelectedContextModel(context) {
+  if (!context.selectedModelId) {
+    return context.models[0] || null;
+  }
+
+  return context.models.find((model) => model.id === context.selectedModelId) || null;
 }

@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.example
+!.env.docker.example
 *.pem
 *.key
 id_rsa*
@@ -40,6 +41,7 @@ data/models/*
 data/vector_store/*
 data/imported/*
 data/bundles/*
+data/backtests/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/reports/.gitkeep

@@ -36,6 +36,6 @@ Browser
   → Static frontend files
   → /api reverse proxy
     → FastAPI Backend
-      → PostgreSQL
+      → PostgreSQL metadata store
       → Qdrant
       → Optional llama.cpp

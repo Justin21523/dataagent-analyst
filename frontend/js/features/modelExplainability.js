@@ -170,7 +170,7 @@ async function runExplainability() {
       title: "Analyzing Model",
       message: (
         "Computing diagnostics, permutation importance, "
-        "SHAP, and local explanation."
+        + "SHAP, and local explanation."
       ),
     },
   );
@@ -256,6 +256,17 @@ async function runExplainability() {
         ].join(" · "),
       },
     );
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "dataagent:model-explainability-completed",
+        {
+          detail: {
+            modelId,
+          },
+        },
+      ),
+    );
   } catch (error) {
     renderExplainabilityStatus(
       elements.status,
@@ -290,7 +301,7 @@ async function generateInsight() {
         elements.modelSelect.value,
         (
           "Explain model reliability, important drivers, "
-          "error risks, limitations, and next experiments."
+          + "error risks, limitations, and next experiments."
         ),
       )
     );

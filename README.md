@@ -6,7 +6,7 @@ It supports CSV upload, profiling, EDA, visualization, feature preparation, base
 
 ## Current Status
 
-This repository is a portfolio-grade MVP with a working FastAPI backend, modular vanilla JavaScript frontend, JSON/file-based local persistence, Docker Compose deployment, and automated tests.
+This repository is a portfolio-grade MVP with a working FastAPI backend, modular vanilla JavaScript frontend, local artifact storage, switchable JSON/PostgreSQL metadata persistence, Docker Compose deployment, and automated tests.
 
 Implemented capabilities:
 
@@ -26,7 +26,7 @@ Implemented capabilities:
 
 Known limitations:
 
-- Metadata persistence currently uses JSON registries under `data/processed`; PostgreSQL is wired in Docker but not yet the application metadata store.
+- Metadata persistence defaults to JSON registries for local development and tests; Docker can run the same metadata contracts on PostgreSQL.
 - Qdrant is available in Docker for future RAG work, but dataset knowledge RAG is not implemented yet.
 - The local LLM is optional and defaults to disabled; AI explanations fall back to deterministic text when offline.
 - Runtime artifacts under `data/` are local state and should not be committed.
@@ -36,9 +36,9 @@ Known limitations:
 ```text
 Browser
   -> Vanilla JS frontend
-  -> FastAPI /api
+     -> FastAPI /api
      -> Dataset, EDA, Visualization, ML, Explainability, Drift, Bundle, Agent services
-     -> JSON metadata registries in data/processed
+     -> Metadata repository: JSON registries or PostgreSQL tables
      -> CSV/model/report artifacts in data/
      -> Optional llama.cpp local LLM
 ```
@@ -138,6 +138,32 @@ Smoke test against a running backend:
 make smoke
 ```
 
+## Metadata Persistence
+
+Local development defaults to JSON registries under `data/processed`:
+
+```bash
+METADATA_BACKEND=json
+```
+
+Docker defaults to PostgreSQL metadata tables while keeping CSV, model, report,
+and bundle artifacts in the existing `data/` volumes:
+
+```bash
+METADATA_BACKEND=postgres
+DATABASE_URL=postgresql://dataagent:dataagent_dev_password@postgres:5432/dataagent
+```
+
+To migrate existing JSON registry metadata into PostgreSQL:
+
+```bash
+python scripts/migrate_metadata_to_postgres.py --dry-run
+python scripts/migrate_metadata_to_postgres.py
+```
+
+The migration is idempotent and updates rows by metadata ID. It does not copy
+artifact files; it validates artifact references and stores their relative paths.
+
 ## Docker Compose
 
 Initialize Docker environment variables:
@@ -217,3 +243,109 @@ Committed files under `data/` should be limited to:
 - `.gitkeep` placeholders
 
 Generated datasets, models, reports, registries, drift reports, bundles, imports, and vector-store files are local runtime artifacts and are ignored by Git.
+
+<!-- portfolio-readme:begin -->
+
+## Portfolio Documentation
+
+### Project Overview
+
+**DataAgent Analyst** is maintained as part of the Justin21523 GitHub portfolio. Demo: dataagent-analyst
+
+### Features
+
+- Demo: dataagent-analyst
+- Python workflow for data processing, automation, AI, or backend tasks.
+- API-oriented backend structure suitable for service integration.
+
+### Tech Stack
+
+- HTML
+- Python
+- FastAPI
+- pandas
+- Makefile
+
+### Installation
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Usage
+
+- Run `python -m venv .venv`
+- Run `source .venv/bin/activate`
+- Run `pip install -r requirements.txt`
+
+### Project Structure
+
+```text
+dataagent-analyst/
+  .cache/
+  .dockerignore
+  .editorconfig
+  .env.docker
+  .env.docker.example
+  .env.example
+  .gitignore
+  .mypy_cache/
+  .pytest_cache/
+  .ruff_cache/
+  Makefile
+  README.md
+```
+
+### Environment Variables
+
+- `APP_ENV`: TODO: Document expected value and whether it is required.
+- `LOG_LEVEL`: TODO: Document expected value and whether it is required.
+- `LLM_ENABLED`: TODO: Document expected value and whether it is required.
+- `LLM_BASE_URL`: TODO: Document expected value and whether it is required.
+- `LLM_MODEL`: TODO: Document expected value and whether it is required.
+- `LLM_TIMEOUT_SECONDS`: TODO: Document expected value and whether it is required.
+- `LLM_TEMPERATURE`: TODO: Document expected value and whether it is required.
+- `LLM_MAX_TOKENS`: TODO: Document expected value and whether it is required.
+- `INFRASTRUCTURE_CHECKS_ENABLED`: TODO: Document expected value and whether it is required.
+- `INFRASTRUCTURE_TIMEOUT_SECONDS`: TODO: Document expected value and whether it is required.
+- `METADATA_BACKEND`: TODO: Document expected value and whether it is required.
+- `DATABASE_URL`: TODO: Document expected value and whether it is required.
+- `QDRANT_URL`: TODO: Document expected value and whether it is required.
+- `QDRANT_API_KEY`: TODO: Document expected value and whether it is required.
+- `EXPLAINABILITY_MAX_SAMPLE_SIZE`: TODO: Document expected value and whether it is required.
+- `EXPLAINABILITY_MAX_BACKGROUND_SIZE`: TODO: Document expected value and whether it is required.
+- `EXPLAINABILITY_MAX_PERMUTATION_REPEATS`: TODO: Document expected value and whether it is required.
+- `EXPLAINABILITY_MAX_BEESWARM_FEATURES`: TODO: Document expected value and whether it is required.
+- `EXPLAINABILITY_MAX_LOCAL_FEATURES`: TODO: Document expected value and whether it is required.
+
+### Deployment
+
+- Demo / GitHub Pages: https://justin21523.github.io/dataagent-analyst/
+- Static demo build: `make static-demo`
+- Portfolio media capture: `make portfolio-media`
+
+The GitHub Pages demo is a static interactive build of the real frontend. It uses deterministic fixture data and a browser-side mock API so the UI, route shell, guided helper, model lifecycle views, reports, and backtest viewer can be reviewed without running FastAPI on GitHub Pages.
+
+### Demo
+
+- Live demo: https://justin21523.github.io/dataagent-analyst/
+- Source: https://github.com/Justin21523/dataagent-analyst
+- README: https://github.com/Justin21523/dataagent-analyst#readme
+- Demo video: linked from the portfolio media gallery.
+
+### Screenshots
+
+- Portfolio media includes Playwright-captured screenshots for upload, guided tour, dataset preview, schema, EDA, visualization lab, ML Workbench, model registry, prediction, explainability, drift, reports, backtests, agent jobs, AI insights, and mobile guide views.
+- The default portfolio video demonstrates the guided helper overlay and the end-to-end DataAgent workflow shell.
+
+### License
+
+- TODO: Add or confirm the repository license.
+
+### Maintainer
+
+- Justin21523 - https://github.com/Justin21523
+
+<!-- portfolio-readme:end -->

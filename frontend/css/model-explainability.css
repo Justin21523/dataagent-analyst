@@ -30,7 +30,7 @@
   width: 100%;
   padding: 0.82rem;
   border: 1px solid var(--border);
-  border-radius: 0.85rem;
+  border-radius: var(--radius);
   color: var(--text);
   background: #ffffff;
   font: inherit;
@@ -62,7 +62,7 @@
   color: #dbeafe;
   background: #0f172a;
   padding: 0.45rem;
-  border-radius: 0.45rem;
+  border-radius: var(--radius-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

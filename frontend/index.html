@@ -9,54 +9,208 @@
     <script type="module" src="./js/bootstrap.js"></script>
   </head>
   <body>
-    <!-- 頂部導覽列：維持英文介面，方便作品集與面試展示。 -->
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">AI Data Analysis Workbench</p>
-        <h1>DataAgent Analyst</h1>
+    <div class="app-frame">
+      <aside class="workspace-sidebar" aria-label="Workspace navigation">
+        <div class="sidebar-brand">
+          <span class="brand-mark">DA</span>
+          <div>
+            <p class="eyebrow">Data Workbench</p>
+            <h1>DataAgent Analyst</h1>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <section class="sidebar-nav-group">
+            <h2>Data</h2>
+            <button class="sidebar-nav-button active" type="button" data-view-target="data-upload">
+              <span>Upload</span>
+              <small>CSV intake</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="data-preview">
+              <span>Dataset Preview</span>
+              <small>Rows and columns</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="data-versions">
+              <span>Versions & Transform</span>
+              <small>Recipes</small>
+            </button>
+          </section>
+
+          <section class="sidebar-nav-group">
+            <h2>Analyze</h2>
+            <button class="sidebar-nav-button" type="button" data-view-target="analyze-schema">
+              <span>Schema</span>
+              <small>Types and roles</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="analyze-eda">
+              <span>EDA</span>
+              <small>Quality and stats</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="analyze-visualization">
+              <span>Visualization Lab</span>
+              <small>Charts</small>
+            </button>
+          </section>
+
+          <section class="sidebar-nav-group">
+            <h2>Model</h2>
+            <button class="sidebar-nav-button" type="button" data-view-target="model-workbench">
+              <span>ML Workbench</span>
+              <small>Experiments</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="model-registry">
+              <span>Registry & Lifecycle</span>
+              <small>Promotion</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="model-prediction">
+              <span>Prediction</span>
+              <small>JSON and CSV</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="model-explainability">
+              <span>Explainability</span>
+              <small>SHAP and diagnostics</small>
+            </button>
+          </section>
+
+          <section class="sidebar-nav-group">
+            <h2>Lifecycle</h2>
+            <button class="sidebar-nav-button" type="button" data-view-target="lifecycle-drift">
+              <span>Drift Center</span>
+              <small>Monitor change</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="lifecycle-reports">
+              <span>Reports</span>
+              <small>Markdown output</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="lifecycle-backtests">
+              <span>Backtest Runs</span>
+              <small>Quality gates</small>
+            </button>
+          </section>
+
+          <section class="sidebar-nav-group">
+            <h2>Agent</h2>
+            <button class="sidebar-nav-button" type="button" data-view-target="agent-workflow">
+              <span>Agent Jobs</span>
+              <small>Run history</small>
+            </button>
+            <button class="sidebar-nav-button" type="button" data-view-target="agent-insights">
+              <span>AI Insights</span>
+              <small>LLM summaries</small>
+            </button>
+          </section>
+        </nav>
+      </aside>
+
+      <div class="workspace-main">
+        <header class="workspace-topbar">
+          <div class="topbar-status">
+            <div id="apiStatus" class="status-pill checking">Checking API...</div>
+            <div>
+              <p class="context-label">Current Dataset</p>
+              <strong id="contextDatasetName">No dataset selected</strong>
+              <span id="contextDatasetMeta">Upload or select a dataset to begin.</span>
+            </div>
+          </div>
+
+          <div class="context-stat-row" aria-label="Workspace context">
+            <div class="context-stat">
+              <span>Version</span>
+              <strong id="contextVersion">-</strong>
+            </div>
+            <div class="context-stat">
+              <span>Model</span>
+              <strong id="contextModel">-</strong>
+            </div>
+            <div class="context-stat">
+              <span>Drift</span>
+              <strong id="contextDrift">Not checked</strong>
+            </div>
+          </div>
+        </header>
+
+        <div class="workspace-content-grid">
+          <main class="app-shell">
+            <div class="route-heading">
+              <div>
+                <p id="routeEyebrow" class="eyebrow">Data</p>
+                <h2 id="routeTitle">Upload</h2>
+              </div>
+
+              <nav id="sectionSubnav" class="section-subnav" aria-label="Section shortcuts"></nav>
+            </div>
+
+            <div id="overviewView" class="app-view" data-view-mount="data"></div>
+            <div id="analysisView" class="app-view" data-view-mount="analyze" hidden></div>
+            <div
+              id="machineLearningView"
+              class="app-view"
+              data-view-mount="model"
+              hidden
+            ></div>
+            <div
+              id="intelligenceView"
+              class="app-view"
+              data-view-mount="intelligence"
+              hidden
+            ></div>
+          </main>
+
+          <aside class="workspace-inspector" aria-label="Workspace inspector">
+            <section class="inspector-panel">
+              <div class="panel-header compact-header">
+                <div>
+                  <span class="panel-tag">State</span>
+                  <h3>Current Context</h3>
+                </div>
+              </div>
+
+              <dl class="inspector-list">
+                <div>
+                  <dt>Dataset</dt>
+                  <dd id="inspectorDataset">None selected</dd>
+                </div>
+                <div>
+                  <dt>Shape</dt>
+                  <dd id="inspectorShape">-</dd>
+                </div>
+                <div>
+                  <dt>Target</dt>
+                  <dd id="inspectorTarget">Auto / none</dd>
+                </div>
+                <div>
+                  <dt>Production Model</dt>
+                  <dd id="inspectorProductionModel">-</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="inspector-panel">
+              <div class="panel-header compact-header">
+                <div>
+                  <span class="panel-tag">Next</span>
+                  <h3>Suggested Actions</h3>
+                </div>
+              </div>
+
+              <div id="workflowTimeline" class="workflow-timeline" aria-label="Workflow status"></div>
+
+              <div id="nextActionList" class="next-action-list">
+                <button class="next-action-button" type="button" data-view-target="data-upload">
+                  Upload a dataset
+                </button>
+                <button class="next-action-button" type="button" data-view-target="analyze-schema">
+                  Inspect schema
+                </button>
+                <button class="next-action-button" type="button" data-view-target="model-workbench">
+                  Prepare ML experiment
+                </button>
+              </div>
+            </section>
+          </aside>
+        </div>
       </div>
-
-      <div id="apiStatus" class="status-pill checking">Checking API...</div>
-    </header>
-
-<nav class="workspace-nav" aria-label="Workspace navigation">
-      <div class="workspace-nav-inner">
-        <button class="workspace-nav-button active" type="button" data-view-target="overview">
-          Overview
-        </button>
-        <button class="workspace-nav-button" type="button" data-view-target="analysis">
-          Analysis
-        </button>
-        <button class="workspace-nav-button" type="button" data-view-target="machine-learning">
-          Machine Learning
-        </button>
-        <button class="workspace-nav-button" type="button" data-view-target="intelligence">
-          Agent & AI
-        </button>
-      </div>
-    </nav>
-
-<main class="app-shell">
-      <div id="overviewView" class="app-view" data-view-mount="overview"></div>
-      <div
-        id="analysisView"
-        class="app-view"
-        data-view-mount="analysis"
-        hidden
-      ></div>
-      <div
-        id="machineLearningView"
-        class="app-view"
-        data-view-mount="machine-learning"
-        hidden
-      ></div>
-      <div
-        id="intelligenceView"
-        class="app-view"
-        data-view-mount="intelligence"
-        hidden
-      ></div>
-    </main>
+    </div>
 
     <div
       id="toastRegion"
@@ -64,6 +218,6 @@
       aria-live="polite"
       aria-atomic="true"
     ></div>
-
-</body>
+    <div id="guideTourRoot"></div>
+  </body>
 </html>

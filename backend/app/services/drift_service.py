@@ -1,4 +1,3 @@
-import json
 from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
@@ -18,6 +17,10 @@ from sklearn.metrics import (
 from sklearn.pipeline import Pipeline
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.drift_schema import (
     DriftMetric,
     DriftReportRequest,
@@ -39,7 +42,7 @@ class DriftReportNotFoundError(DriftServiceError):
 class DriftService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.drift_report_registry_filename
+        self.metadata_repository = create_metadata_repository(settings)
         self.dataset_service = DatasetService(settings)
         self.model_registry_service = ModelRegistryService(settings)
 
@@ -205,6 +208,9 @@ class DriftService:
         reference: pd.Series,
         current: pd.Series,
     ) -> DriftMetric:
+        if self._is_boolean_like(reference, current):
+            return self._categorical_column_drift(column, reference, current)
+
         reference_numeric = pd.to_numeric(reference, errors="coerce")
         current_numeric = pd.to_numeric(current, errors="coerce")
 
@@ -223,19 +229,7 @@ class DriftService:
                 },
             )
 
-        psi, js = self._categorical_distances(reference, current)
-
-        return DriftMetric(
-            column=column,
-            drift_type="categorical",
-            status=self._psi_status(psi),
-            psi=psi,
-            js_distance=js,
-            details={
-                "reference_unique": int(reference.nunique(dropna=True)),
-                "current_unique": int(current.nunique(dropna=True)),
-            },
-        )
+        return self._categorical_column_drift(column, reference, current)
 
     def _numeric_psi(self, reference: pd.Series, current: pd.Series) -> float | None:
         if reference.empty or current.empty:
@@ -259,8 +253,8 @@ class DriftService:
         reference: pd.Series,
         current: pd.Series,
     ) -> tuple[float | None, float | None]:
-        reference_counts = reference.astype(str).value_counts(dropna=False)
-        current_counts = current.astype(str).value_counts(dropna=False)
+        reference_counts = self._categorical_labels(reference).value_counts(dropna=False)
+        current_counts = self._categorical_labels(current).value_counts(dropna=False)
         labels = sorted(set(reference_counts.index) | set(current_counts.index))
         reference_array = np.array([reference_counts.get(label, 0) for label in labels])
         current_array = np.array([current_counts.get(label, 0) for label in labels])
@@ -270,6 +264,40 @@ class DriftService:
         js = float(jensenshannon(reference_prob, current_prob))
 
         return psi, round(js, 4)
+
+    def _categorical_labels(self, series: pd.Series) -> pd.Series:
+        return series.map(lambda value: "<missing>" if pd.isna(value) else str(value))
+
+    def _categorical_column_drift(
+        self,
+        column: str,
+        reference: pd.Series,
+        current: pd.Series,
+    ) -> DriftMetric:
+        psi, js = self._categorical_distances(reference, current)
+
+        return DriftMetric(
+            column=column,
+            drift_type="categorical",
+            status=self._psi_status(psi),
+            psi=psi,
+            js_distance=js,
+            details={
+                "reference_unique": int(reference.nunique(dropna=True)),
+                "current_unique": int(current.nunique(dropna=True)),
+            },
+        )
+
+    def _is_boolean_like(self, reference: pd.Series, current: pd.Series) -> bool:
+        if pd.api.types.is_bool_dtype(reference) or pd.api.types.is_bool_dtype(current):
+            return True
+
+        combined = pd.concat([reference.dropna(), current.dropna()])
+        if combined.empty:
+            return False
+
+        normalized = combined.astype(str).str.strip().str.lower()
+        return normalized.isin({"true", "false", "0", "1"}).all() and normalized.nunique() <= 2
 
     def _psi_from_counts(
         self,
@@ -515,22 +543,13 @@ class DriftService:
         self._save_registry(registry)
 
     def _load_registry(self) -> dict[str, list[dict[str, Any]]]:
-        if not self.registry_path.exists():
-            return {"reports": []}
-
-        with self.registry_path.open("r", encoding="utf-8") as file:
-            registry = json.load(file)
-
-        if "reports" not in registry or not isinstance(registry["reports"], list):
-            raise DriftServiceError("Drift report registry format is invalid.")
-
-        return registry
+        try:
+            return self.metadata_repository.load_registry("drift_reports")
+        except MetadataRepositoryError as exc:
+            raise DriftServiceError("Drift report registry format is invalid.") from exc
 
     def _save_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("drift_reports", registry)
+        except MetadataRepositoryError as exc:
+            raise DriftServiceError("Drift report registry format is invalid.") from exc

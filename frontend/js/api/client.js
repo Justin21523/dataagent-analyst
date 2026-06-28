@@ -47,6 +47,22 @@ export function getHealthApi() {
 }
 
 
+export function getWorkspaceStateApi(workspaceId = "default") {
+  return apiFetch(`/api/workspaces/${workspaceId}/state`);
+}
+
+
+export function updateWorkspaceStateApi(workspaceId = "default", payload = {}) {
+  return apiFetch(`/api/workspaces/${workspaceId}/state`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+
 export function listDatasetsApi() {
   return apiFetch("/api/datasets");
 }
@@ -227,6 +243,71 @@ export function listReportsApi(datasetId) {
 
 export function getReportApi(reportId) {
   return apiFetch(`/api/reports/${reportId}`);
+}
+
+export function listBacktestRunsApi(limit = 50) {
+  return apiFetch(`/api/backtests/runs?limit=${encodeURIComponent(limit)}`);
+}
+
+
+export function getBacktestRunApi(runId) {
+  return apiFetch(`/api/backtests/runs/${encodeURIComponent(runId)}`);
+}
+
+
+export function getBacktestPayloadApi(runId, payloadName) {
+  return apiFetch(
+    `/api/backtests/runs/${encodeURIComponent(runId)}/payloads/${encodeURIComponent(payloadName)}`,
+  );
+}
+
+
+export function listBacktestSuitesApi() {
+  return apiFetch("/api/backtests/suites");
+}
+
+
+export function getBacktestSuiteApi(suiteId) {
+  return apiFetch(`/api/backtests/suites/${encodeURIComponent(suiteId)}`);
+}
+
+
+export function buildBacktestScreenshotUrl(runId, screenshotName) {
+  return (
+    `${API_BASE_URL}/api/backtests/runs/${encodeURIComponent(runId)}`
+    + `/screenshots/${encodeURIComponent(screenshotName)}`
+  );
+}
+
+
+export function startBacktestJobApi(payload) {
+  return apiFetch("/api/backtests/jobs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+
+export function listBacktestJobsApi(limit = 25) {
+  return apiFetch(`/api/backtests/jobs?limit=${encodeURIComponent(limit)}`);
+}
+
+
+export function getBacktestJobApi(jobId) {
+  return apiFetch(`/api/backtests/jobs/${encodeURIComponent(jobId)}`);
+}
+
+
+export function listBacktestJobEventsApi(jobId) {
+  return apiFetch(`/api/backtests/jobs/${encodeURIComponent(jobId)}/events`);
+}
+
+
+export function buildBacktestJobEventStreamUrl(jobId) {
+  return `${API_BASE_URL}/api/backtests/jobs/${encodeURIComponent(jobId)}/events/stream`;
 }
 
 export function getLLMStatusApi() {

@@ -1,9 +1,12 @@
-import json
 from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.report_schema import ReportDetail, ReportSummary
 from backend.app.services.column_profiler_service import ColumnProfilerService
 from backend.app.services.dataset_service import DatasetService
@@ -23,7 +26,7 @@ class ReportNotFoundError(ReportServiceError):
 class ReportService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.report_registry_filename
+        self.metadata_repository = create_metadata_repository(settings)
         self.dataset_service = DatasetService(settings)
         self.column_profiler_service = ColumnProfilerService(settings)
         self.eda_service = EdaService(settings)
@@ -323,28 +326,16 @@ class ReportService:
         return "\n".join(lines)
 
     def _load_registry(self) -> dict[str, list[dict[str, Any]]]:
-        if not self.registry_path.exists():
-            return {"reports": []}
-
         try:
-            with self.registry_path.open("r", encoding="utf-8") as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("reports")
+        except MetadataRepositoryError as exc:
             raise ReportServiceError("Report registry file is corrupted.") from exc
 
-        if "reports" not in registry or not isinstance(registry["reports"], list):
-            raise ReportServiceError("Report registry format is invalid.")
-
-        return registry
-
     def _save_registry(self, registry: dict[str, list[dict[str, Any]]]) -> None:
-        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open("w", encoding="utf-8") as file:
-            json.dump(registry, file, ensure_ascii=False, indent=2)
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("reports", registry)
+        except MetadataRepositoryError as exc:
+            raise ReportServiceError("Report registry format is invalid.") from exc
 
     def _find_report_record(self, report_id: str) -> dict[str, Any]:
         registry = self._load_registry()

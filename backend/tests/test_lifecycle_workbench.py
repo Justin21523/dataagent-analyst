@@ -6,19 +6,19 @@ client = TestClient(create_app())
 
 def _upload_lifecycle_dataset() -> str:
     csv_content = (
-        b"customer_id,age,signup_date,monthly_charges,tenure_months,contract_type,churn\n"
-        b"C0001,29,2024-01-01,799,12,Monthly,No\n"
-        b"C0002,41,2024-01-02,1299,4,Monthly,Yes\n"
-        b"C0003,,2024-01-03,999,24,One Year,No\n"
-        b"C0004,52,2024-01-04,1599,2,Monthly,Yes\n"
-        b"C0005,46,2024-01-05,899,36,Two Year,No\n"
-        b"C0006,31,2024-01-06,1099,7,Monthly,Yes\n"
-        b"C0007,27,2024-01-07,699,18,One Year,No\n"
-        b"C0008,63,2024-01-08,1899,3,Monthly,Yes\n"
-        b"C0009,38,2024-01-09,1199,15,One Year,No\n"
-        b"C0010,44,2024-01-10,1399,6,Monthly,Yes\n"
-        b"C0011,33,2024-01-11,850,16,One Year,No\n"
-        b"C0012,58,2024-01-12,1750,5,Monthly,Yes\n"
+        b"customer_id,age,signup_date,monthly_charges,tenure_months,contract_type,is_active,churn\n"
+        b"C0001,29,2024-01-01,799,12,Monthly,true,No\n"
+        b"C0002,41,2024-01-02,1299,4,Monthly,false,Yes\n"
+        b"C0003,,2024-01-03,999,24,One Year,true,No\n"
+        b"C0004,52,2024-01-04,1599,2,Monthly,false,Yes\n"
+        b"C0005,46,2024-01-05,899,36,Two Year,true,No\n"
+        b"C0006,31,2024-01-06,1099,7,Monthly,false,Yes\n"
+        b"C0007,27,2024-01-07,699,18,One Year,true,No\n"
+        b"C0008,63,2024-01-08,1899,3,Monthly,false,Yes\n"
+        b"C0009,38,2024-01-09,1199,15,One Year,true,No\n"
+        b"C0010,44,2024-01-10,1399,6,Monthly,false,Yes\n"
+        b"C0011,33,2024-01-11,850,16,One Year,true,No\n"
+        b"C0012,58,2024-01-12,1750,5,Monthly,false,Yes\n"
     )
     response = client.post(
         "/api/datasets/upload",

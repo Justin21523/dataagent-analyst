@@ -4,8 +4,10 @@ PYTHON := .venv/bin/python
 BACKEND_HOST ?= 127.0.0.1
 BACKEND_PORT ?= 8000
 FRONTEND_PORT ?= 5173
+BACKTEST_BACKEND_PORT ?= 8010
+BACKTEST_FRONTEND_PORT ?= 5174
 
-.PHONY: install test lint format typecheck frontend-check frontend-js-check check demo-data run-backend run-frontend smoke
+.PHONY: install test lint format typecheck frontend-check frontend-js-check check demo-data run-backend run-frontend smoke backtest scenario-backtest ui-backtest full-backtest playwright-install static-demo portfolio-media
 
 install:
 >uv pip install --python $(PYTHON) -r requirements.txt
@@ -41,6 +43,29 @@ run-frontend:
 
 smoke:
 >bash scripts/smoke_test.sh
+
+backtest:
+>$(PYTHON) scripts/backtest_full_workflow.py --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
+
+scenario-backtest:
+>$(PYTHON) scripts/backtest_scenarios.py --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
+
+playwright-install:
+>$(PYTHON) -m playwright install chromium
+
+ui-backtest: playwright-install
+>$(PYTHON) scripts/ui_backtest_workflow.py --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
+
+full-backtest: playwright-install
+>$(PYTHON) scripts/backtest_full_workflow.py --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
+>$(PYTHON) scripts/backtest_scenarios.py --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
+>$(PYTHON) scripts/ui_backtest_workflow.py --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
+
+static-demo:
+>$(PYTHON) scripts/build_static_demo.py
+
+portfolio-media: playwright-install
+>$(PYTHON) scripts/capture_portfolio_media.py --portfolio-dir ../justin-portfolio --base-url http://$(BACKEND_HOST):$(BACKTEST_BACKEND_PORT) --frontend-url http://$(BACKEND_HOST):$(BACKTEST_FRONTEND_PORT)
 
 DOCKER_ENV_FILE ?= .env.docker
 COMPOSE := docker compose --env-file $(DOCKER_ENV_FILE)

@@ -1,8 +1,11 @@
-import json
 from threading import Lock
 from typing import Any
 
 from backend.app.core.config import Settings
+from backend.app.repositories.metadata_repository import (
+    MetadataRepositoryError,
+    create_metadata_repository,
+)
 from backend.app.schemas.ml_workbench_schema import (
     MLWorkbenchExperimentResponse,
     MLWorkbenchExperimentSummary,
@@ -24,7 +27,7 @@ class MLExperimentNotFoundError(
 class MLExperimentRegistryService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.registry_path = settings.processed_data_dir / settings.ml_experiment_registry_filename
+        self.metadata_repository = create_metadata_repository(settings)
 
     def add_experiment(
         self,
@@ -86,48 +89,16 @@ class MLExperimentRegistryService:
     def _load_registry(
         self,
     ) -> dict[str, list[dict[str, Any]]]:
-        if not self.registry_path.exists():
-            return {
-                "experiments": [],
-            }
-
         try:
-            with self.registry_path.open(
-                "r",
-                encoding="utf-8",
-            ) as file:
-                registry = json.load(file)
-        except json.JSONDecodeError as exc:
+            return self.metadata_repository.load_registry("ml_experiments")
+        except MetadataRepositoryError as exc:
             raise MLExperimentRegistryError("ML experiment registry is corrupted.") from exc
-
-        if "experiments" not in registry or not isinstance(
-            registry["experiments"],
-            list,
-        ):
-            raise MLExperimentRegistryError("ML experiment registry format is invalid.")
-
-        return registry
 
     def _save_registry(
         self,
         registry: dict[str, list[dict[str, Any]]],
     ) -> None:
-        self.registry_path.parent.mkdir(
-            parents=True,
-            exist_ok=True,
-        )
-
-        temporary_path = self.registry_path.with_suffix(".tmp")
-
-        with temporary_path.open(
-            "w",
-            encoding="utf-8",
-        ) as file:
-            json.dump(
-                registry,
-                file,
-                ensure_ascii=False,
-                indent=2,
-            )
-
-        temporary_path.replace(self.registry_path)
+        try:
+            self.metadata_repository.save_registry("ml_experiments", registry)
+        except MetadataRepositoryError as exc:
+            raise MLExperimentRegistryError("ML experiment registry format is invalid.") from exc
