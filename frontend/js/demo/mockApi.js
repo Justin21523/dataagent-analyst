@@ -338,6 +338,8 @@ function visualizationLab() {
     summary: {
       row_count: dataset.row_count,
       column_count: dataset.column_count,
+      chart_count: 3,
+      sampled_rows: 80,
       sampled_row_count: 80,
       target_column: "churn",
       numeric_columns: ["tenure", "monthly_charges", "total_charges", "support_calls"],
@@ -359,30 +361,73 @@ function visualizationLab() {
 }
 
 function chartSpec(type, xColumn, yColumn, title) {
+  const chartId = `${type}-${xColumn}-${yColumn || "count"}`;
+  const chartType = type === "bar" ? "category_bar" : type === "box" ? "boxplot" : type;
+  const config = {
+    x_dimension: xColumn,
+    y_dimension: yColumn || "count",
+    group_dimension: yColumn === "churn" ? "churn" : null,
+  };
+  const data = chartData(chartType, xColumn, yColumn);
+
   return {
-    chart_id: `${type}-${xColumn}-${yColumn || "count"}`,
-    chart_type: type,
+    id: chartId,
+    chart_id: chartId,
+    chart_family: chartType === "scatter" ? "relationship" : chartType === "boxplot" ? "distribution" : "comparison",
+    chart_type: chartType,
     title,
     description: `Demo ${type} chart for ${xColumn}${yColumn ? ` and ${yColumn}` : ""}.`,
+    insight: yColumn
+      ? `${xColumn} and ${yColumn} show a stable demo relationship for guided analysis.`
+      : `${xColumn} has a readable demo distribution for quick profiling.`,
+    columns: [xColumn, yColumn].filter(Boolean),
     x_column: xColumn,
     y_column: yColumn,
     group_column: yColumn === "churn" ? "churn" : null,
-    option: {
-      title: { text: title, left: "center" },
-      tooltip: { trigger: "axis" },
-      grid: { left: 42, right: 20, bottom: 40, top: 56 },
-      xAxis: { type: "category", data: ["low", "medium", "high"] },
-      yAxis: { type: "value" },
-      series: [
-        {
-          type: type === "scatter" ? "scatter" : type === "line" ? "line" : "bar",
-          data: type === "scatter" ? [[24, 62], [41, 73], [13, 94], [55, 59]] : [42, 88, 51],
-          itemStyle: { color: "#2563eb" },
-        },
-      ],
-    },
+    config,
+    data,
     sample_size: 80,
     warnings: [],
+  };
+}
+
+function chartData(chartType, xColumn, yColumn) {
+  if (chartType === "scatter") {
+    return {
+      dimensions: [xColumn, yColumn || "total_charges", "contract_type"],
+      source: [
+        [24, 62, "month-to-month"],
+        [41, 73, "one-year"],
+        [13, 94, "month-to-month"],
+        [55, 59, "two-year"],
+        [32, 81, "one-year"],
+      ],
+    };
+  }
+
+  if (chartType === "boxplot") {
+    return {
+      categories: ["month-to-month", "one-year", "two-year"],
+      boxes: [
+        [48, 62, 76, 88, 101],
+        [42, 54, 63, 72, 84],
+        [38, 47, 58, 68, 79],
+      ],
+      outliers: [
+        [0, 112],
+        [1, 91],
+      ],
+    };
+  }
+
+  return {
+    dimensions: [xColumn, yColumn || "count"],
+    source: [
+      [xColumn, yColumn || "count"],
+      ["month-to-month", 162],
+      ["one-year", 78],
+      ["two-year", 60],
+    ],
   };
 }
 
